@@ -84,24 +84,16 @@
                 <div style="margin-top:12px; font-weight:bold;">t-shirt / "oversize"</div>
                 <div style="opacity: 0.6;">2200 rub</div>
             </div>
-            
-            <div class="catalog-item">
-                <div class="soon-box">coming soon</div>
-                <div style="margin-top:12px; font-weight:bold;">long sleeve / "basic"</div>
-                <div style="opacity: 0.6;">3100 rub</div>
-            </div>
         </div>
     </div>
 
     <div id="product-page" class="page">
         <div onclick="showPage('catalog')" style="margin-bottom:20px; cursor:pointer;">← назад</div>
-        
         <div class="swiper">
             <div class="swiper-wrapper" id="p-slides"></div>
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
         </div>
-
         <div class="product-info">
             <h1 id="p-title"></h1>
             <div class="price" id="p-price"></div>
@@ -112,21 +104,23 @@
 
     <div id="checkout-page" class="page">
         <div onclick="showPage('product-page')" style="margin-bottom:20px; cursor:pointer;">← назад</div>
-        <div style="font-size:22px; font-weight:bold; margin-bottom:20px;">контактные данные</div>
+        <div style="font-size:22px; font-weight:bold; margin-bottom:20px;">данные для доставки</div>
         
         <form id="order-form">
             <input type="text" id="f_name" placeholder="имя и фамилия" required>
-            <input type="tel" id="f_phone" placeholder="телефон (79001112233)" required pattern="[0-9]{10,11}">
-            <input type="email" id="f_email" placeholder="email" required>
+            <input type="tel" id="f_phone" placeholder="телефон" required>
             
-            <div style="margin: 15px 0 5px 0; font-weight: bold;">адрес доставки</div>
-            <input type="text" id="f_city" placeholder="город / населенный пункт" required>
-            <textarea id="f_addr" rows="3" placeholder="адрес пункта выдачи (сдэк/почта) или ваш адрес и почтовый индекс" required></textarea>
+            <div style="margin: 10px 0 5px 0; font-size: 12px; opacity: 0.5;">город и индекс</div>
+            <input type="text" id="f_city" placeholder="город" required>
+            <input type="text" id="f_zip" placeholder="почтовый индекс" required pattern="[0-9]{6}">
+            
+            <div style="margin: 10px 0 5px 0; font-size: 12px; opacity: 0.5;">точный адрес</div>
+            <textarea id="f_addr" rows="3" placeholder="полный адрес (улица, дом)" required></textarea>
             
             <div style="background: var(--gray); padding: 15px; border-radius: 8px; margin-top: 10px;">
                 <div style="display:flex; justify-content:space-between;">
                     <span>итого с доставкой:</span>
-                    <span id="final-sum" style="font-weight:bold;">4900 rub</span>
+                    <span id="final-sum" style="font-weight:bold;"></span>
                 </div>
             </div>
             
@@ -135,16 +129,12 @@
     </div>
 
     <div id="pay-page" class="page" style="text-align:center;">
-        <div style="font-size:20px; font-weight:bold; margin-bottom:10px;">оплата sbp</div>
-        <div style="font-size:12px; margin-bottom:20px; opacity:0.6;">сканируйте код для перевода</div>
-        
+        <div style="font-size:20px; font-weight:bold; margin-bottom:20px;">оплата sbp</div>
         <div class="qr-card">
-            <img src="qr_code.jpg" style="width:100%; max-width:250px;" alt="QR СБП">
+            <img src="qr_code.jpg" style="width:100%; max-width:250px;">
         </div>
-        
         <div style="font-size:18px; margin: 20px 0;">сумма: <span id="pay-total" style="font-weight:bold;"></span></div>
         <button class="btn-black" onclick="sendOrder()">я оплатил</button>
-        <div style="margin-top:15px; font-size:10px; opacity:0.5;">после нажатия мы проверим платеж и свяжемся с вами</div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -157,11 +147,11 @@
                 title: 'zip-hoode / "snich"',
                 price: 4500,
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'],
-                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево\n\nbaby size (m-l) длина 65см\nbig size (xl+) длина 70см\n\nдоставка 400 rub`
+                desc: `new drop\nоверсайз крой\nдоставка 400 rub`
             }
         };
 
-        // Подключаем Дадату по твоему ключу
+        // Настройка Дадаты
         $("#f_city").suggestions({
             token: "a3e3730b70eb4d2c079c26af9a68a870a9658d62",
             type: "ADDRESS",
@@ -179,17 +169,13 @@
             $('#p-title').text(p.title);
             $('#p-price').text(p.price + ' rub');
             $('#p-desc').text(p.desc);
+            $('#final-sum').text((p.price + 400) + ' rub');
             
             let slides = p.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join('');
             $('#p-slides').html(slides);
 
             setTimeout(() => {
-                new Swiper('.swiper', {
-                    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-                    mousewheel: true,
-                    keyboard: true,
-                    loop: true
-                });
+                new Swiper('.swiper', { navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, loop: true });
             }, 100);
             
             showPage('product-page');
@@ -205,13 +191,12 @@
             const orderData = {
                 customer: $('#f_name').val(),
                 phone: $('#f_phone').val(),
-                email: $('#f_email').val(),
                 city: $('#f_city').val(),
+                zip: $('#f_zip').val(),
                 address: $('#f_addr').val(),
                 item: $('#p-title').text(),
                 total: $('#pay-total').text()
             };
-            // Отправляем данные в бот
             tg.sendData(JSON.stringify(orderData));
             tg.close();
         }
