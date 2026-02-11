@@ -4,260 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
+
     <style>
-        :root {
-            --bg: #ffffff;
-            --text: #000000;
-            --light-gray: #f2f2f2;
-            --border: #e0e0e0;
-        }
-
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 0;
-            text-transform: lowercase;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .page { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
+        :root { --bg: #ffffff; --text: #000000; --gray: #f2f2f2; }
+        body { font-family: 'Courier New', Courier, monospace; background: var(--bg); color: var(--text); margin: 0; text-transform: lowercase; }
+        .page { display: none; padding: 20px; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* ГЛАВНАЯ */
-        .catalog-item { margin-bottom: 40px; cursor: pointer; }
-        .horizontal-slider { 
-            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
-            gap: 10px; margin-bottom: 10px; scrollbar-width: none; 
-        }
-        .horizontal-slider::-webkit-scrollbar { display: none; }
-        .horizontal-slider img, .soon-box { 
-            width: 85%; height: 300px; flex-shrink: 0; scroll-snap-align: center;
-            object-fit: cover; border-radius: 4px; background: var(--light-gray);
-        }
-
-        /* ТОВАР */
-        .product-container { display: flex; gap: 20px; flex-wrap: wrap; }
-        .product-images { flex: 1; min-width: 280px; }
-        .product-images img { width: 100%; margin-bottom: 10px; border-radius: 4px; }
-        .product-details { flex: 1; min-width: 280px; }
-        .price { font-size: 20px; margin: 10px 0; font-weight: bold; }
-        .description { font-size: 13px; line-height: 1.6; white-space: pre-line; margin-bottom: 25px; color: #444; }
         
-        .size-box { display: flex; gap: 10px; margin: 15px 0; }
-        .size-btn { 
-            border: 1px solid var(--text); padding: 8px 15px; cursor: pointer; 
-            font-size: 12px; transition: 0.2s;
-        }
-        .size-btn.active { background: var(--text); color: var(--bg); }
+        /* Слайдер */
+        .swiper { width: 100%; height: 400px; border-radius: 8px; margin-bottom: 15px; }
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .swiper-button-next, .swiper-button-prev { color: #000; scale: 0.7; }
 
-        /* КОРЗИНА И ФОРМЫ */
-        .cart-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 15px 0; }
+        /* Формы */
         input, textarea, select { 
-            width: 100%; padding: 12px; margin-bottom: 12px; 
-            border: 1px solid var(--border); font-family: inherit; font-size: 14px; box-sizing: border-box;
+            width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; 
+            font-family: inherit; box-sizing: border-box; outline: none;
         }
-        .checkout-flex { display: flex; gap: 30px; flex-wrap: wrap; }
-        .checkout-left { flex: 2; min-width: 300px; }
-        .checkout-right { flex: 1; min-width: 250px; background: var(--light-gray); padding: 20px; border-radius: 8px; }
-
-        /* КНОПКИ */
+        input:invalid { border-color: #ff000055; }
+        
         .btn-black { 
-            width: 100%; background: var(--text); color: var(--bg); border: none; 
-            padding: 15px; cursor: pointer; font-family: inherit; font-size: 14px; margin-top: 10px;
+            width: 100%; background: #000; color: #fff; border: none; padding: 15px; 
+            cursor: pointer; font-family: inherit; margin-top: 10px;
         }
-        .back-link { cursor: pointer; display: inline-block; margin-bottom: 20px; opacity: 0.6; font-size: 12px; }
+        .btn-black:disabled { background: #ccc; cursor: not-allowed; }
+
+        .product-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .p-left { flex: 1; min-width: 300px; }
+        .p-right { flex: 1; min-width: 300px; }
+        
+        .qr-placeholder { border: 2px solid #000; padding: 40px; margin: 20px 0; display: inline-block; }
     </style>
 </head>
 <body>
 
     <div id="catalog" class="page active">
-        <div style="font-size: 14px; margin-bottom: 30px; opacity: 0.5;">items / drop 01</div>
-        
-        <div class="catalog-item" onclick="openProduct('zip')">
-            <div class="horizontal-slider">
-                <img src="zip-hoode.jpg">
-                <img src="zip-hoode1.jpg">
-            </div>
-            <div style="font-weight: bold;">zip-hoode / "snich"</div>
-            <div style="opacity: 0.7;">4500 rub</div>
-        </div>
-
-        <div class="catalog-item">
-            <div class="soon-box" style="display:flex; align-items:center; justify-content:center;">soon</div>
-            <div style="font-weight: bold;">t-shirt / "oversize"</div>
-            <div style="opacity: 0.7;">2200 rub</div>
+        <div style="opacity:0.5; margin-bottom:20px;">items / drop 01</div>
+        <div class="product-card" onclick="openProduct('zip')" style="cursor:pointer">
+            <img src="zip-hoode.jpg" style="width:100%; border-radius:8px;">
+            <div style="margin-top:10px; font-weight:bold;">zip-hoode / "snich"</div>
+            <div>4500 rub</div>
         </div>
     </div>
 
     <div id="product-page" class="page">
-        <span class="back-link" onclick="showPage('catalog')">← каталог</span>
+        <div onclick="showPage('catalog')" style="margin-bottom:20px; cursor:pointer;">← назад</div>
         <div class="product-container">
-            <div class="product-images" id="p-images"></div>
-            <div class="product-details">
-                <h1 id="p-title" style="margin:0; font-size: 22px;"></h1>
-                <div class="price" id="p-price"></div>
-                <div class="description" id="p-desc"></div>
-                
-                <div style="font-size: 12px; margin-bottom: 10px;">выберите размер:</div>
-                <div class="size-box" id="p-sizes"></div>
-                
-                <button class="btn-black" onclick="addToCart()">в корзину</button>
+            <div class="p-left">
+                <div class="swiper">
+                    <div class="swiper-wrapper" id="p-slides"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+            </div>
+            <div class="p-right">
+                <h1 id="p-title" style="margin:0;"></h1>
+                <div id="p-price" style="font-size:20px; margin:10px 0;"></div>
+                <div id="p-desc" style="font-size:12px; white-space:pre-line; line-height:1.5;"></div>
+                <div style="margin:20px 0;">
+                    <button class="btn-black" onclick="addToCart()">в корзину</button>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div id="cart-page" class="page">
-        <div style="font-size: 20px; margin-bottom: 30px;">корзина</div>
-        <div id="cart-content"></div>
-        <div id="cart-total" style="text-align: right; margin: 20px 0; font-weight: bold;"></div>
-        <button class="btn-black" onclick="showPage('checkout-page')">оформить заказ</button>
-        <div style="text-align: center; margin-top: 20px; font-size: 12px; opacity: 0.5;" onclick="showPage('catalog')">вернуться к покупкам</div>
     </div>
 
     <div id="checkout-page" class="page">
-        <span class="back-link" onclick="showPage('cart-page')">← в корзину</span>
-        <div class="checkout-flex">
-            <div class="checkout-left">
-                <div style="margin-bottom: 20px; font-weight: bold;">контактная информация</div>
-                <input type="text" id="f_name" placeholder="имя">
-                <input type="text" id="f_last" placeholder="фамилия">
-                <input type="tel" id="f_phone" placeholder="телефон">
-                <input type="email" id="f_email" placeholder="email">
-                <input type="text" id="f_soc" placeholder="ссылка на vk / telegram">
-                
-                <div style="margin: 20px 0 10px; font-weight: bold;">адрес доставки</div>
-                <input type="text" id="f_city" placeholder="населенный пункт">
-                <textarea id="f_addr" placeholder="адрес (улица, дом, кв)"></textarea>
-                <textarea id="f_comm" placeholder="комментарий к заказу"></textarea>
-            </div>
+        <div style="font-size:20px; margin-bottom:20px;">оформление заказа</div>
+        <form id="order-form">
+            <input type="text" id="f_name" placeholder="имя и фамилия" required>
+            <input type="tel" id="f_phone" placeholder="телефон (7900...)" required pattern="[0-9]{10,11}">
+            <input type="email" id="f_email" placeholder="email" required>
+            <input type="text" id="f_city" placeholder="населенный пункт (подсказки dadata)" required>
+            <textarea id="f_addr" placeholder="адрес (улица, дом, кв)" required></textarea>
             
-            <div class="checkout-right">
-                <div style="font-weight: bold; margin-bottom: 15px;">доставка</div>
-                <select id="f_ship" onchange="updateFinalTotal()">
-                    <option value="400">сдэк — 400 rub</option>
-                    <option value="400">почта россии — 400 rub</option>
-                </select>
-                <div id="final-price-box" style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 15px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>товары:</span> <span id="summary-items">0 rub</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                        <span>доставка:</span> <span>400 rub</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px;">
-                        <span>итого:</span> <span id="summary-total">0 rub</span>
-                    </div>
+            <div style="margin-top:10px; border-top:1px solid #eee; padding-top:15px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span>итого с доставкой:</span>
+                    <span id="final-sum" style="font-weight:bold;">4900 rub</span>
                 </div>
-                <button class="btn-black" onclick="showPage('pay-page')">оплатить заказ</button>
             </div>
-        </div>
+            <button type="submit" class="btn-black">перейти к оплате</button>
+        </form>
     </div>
 
-    <div id="pay-page" class="page" style="text-align: center;">
-        <div style="font-size: 20px; margin-bottom: 40px;">оплата заказа</div>
-        <div style="border: 2px solid #000; padding: 50px 20px; margin-bottom: 30px; display: inline-block; border-radius: 12px;">
-            <div style="font-weight: bold; font-size: 24px;">СБП</div>
-            <div style="font-size: 12px; margin-top: 10px;">нажмите для перехода в приложение банка</div>
+    <div id="pay-page" class="page" style="text-align:center;">
+        <div style="font-size:18px;">оплата по qr-коду</div>
+        <div class="qr-placeholder">
+            <img src="qr_code.jpg" style="max-width:200px;" alt="QR СБП">
         </div>
-        <button class="btn-black" onclick="sendOrder()">подтвердить оплату</button>
+        <div style="font-size:12px; opacity:0.7;">сканируйте qr в приложении банка<br>сумма: <span id="pay-total"></span></div>
+        <button class="btn-black" onclick="sendOrder()">я оплатил</button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let cart = [];
-        let selectedSize = null;
-        let currentItem = null;
-
-        const data = {
+        const productData = {
             zip: {
                 title: 'zip-hoode / "snich"',
                 price: 4500,
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'],
-                sizes: ['baby-size', 'big-size'],
-                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка\nкружево и кулирная гладь на заклепках\nмашинная вышивка\n\nbaby size (m-l): дл 65/75, шир 65\nbig size (xl+): дл 70/80, шир 70\n\nпреордер онли\nотшив 2-3 недели\nдоставка сдэк 5-7 дней`
+                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка\nпреордер 2-3 недели\nдоставка 400 rub`
             }
         };
 
+        // Инициализация Дадаты
+        $("#f_city").suggestions({
+            token: "ВАШ_API_КЛЮЧ", // СЮДА ВСТАВЬ КЛЮЧ
+            type: "ADDRESS",
+            bounds: "city-settlement",
+            onSelect: function(suggestion) { console.log(suggestion); }
+        });
+
         function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            $('.page').removeClass('active');
+            $('#' + id).addClass('active');
             window.scrollTo(0,0);
         }
 
         function openProduct(id) {
-            currentItem = data[id];
-            document.getElementById('p-title').innerText = currentItem.title;
-            document.getElementById('p-price').innerText = currentItem.price + ' rub';
-            document.getElementById('p-desc').innerText = currentItem.desc;
+            const p = productData[id];
+            $('#p-title').text(p.title);
+            $('#p-price').text(p.price + ' rub');
+            $('#p-desc').text(p.desc);
             
-            document.getElementById('p-images').innerHTML = currentItem.imgs.map(src => `<img src="${src}">`).join('');
-            document.getElementById('p-sizes').innerHTML = currentItem.sizes.map(s => `<div class="size-btn" onclick="selectSize(this, '${s}')">${s}</div>`).join('');
-            
-            selectedSize = null;
+            let slides = p.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join('');
+            $('#p-slides').html(slides);
+
+            new Swiper('.swiper', {
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                mousewheel: true,
+                keyboard: true
+            });
             showPage('product-page');
         }
 
-        function selectSize(btn, s) {
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            selectedSize = s;
-        }
+        function addToCart() { showPage('checkout-page'); }
 
-        function addToCart() {
-            if(!selectedSize) { alert('пожалуйста, выберите размер'); return; }
-            cart.push({ ...currentItem, size: selectedSize });
-            renderCart();
-            showPage('cart-page');
-        }
-
-        function renderCart() {
-            const cont = document.getElementById('cart-content');
-            if(cart.length === 0) {
-                cont.innerHTML = '<div style="text-align:center; padding:50px;">ваша корзина пуста</div>';
-                return;
-            }
-            cont.innerHTML = cart.map((item, i) => `
-                <div class="cart-item">
-                    <div>
-                        <div style="font-weight:bold;">${item.title}</div>
-                        <div style="font-size:12px; opacity:0.6;">размер: ${item.size}</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div>${item.price} rub</div>
-                        <div style="font-size:10px; color:red; cursor:pointer;" onclick="removeItem(${i})">удалить</div>
-                    </div>
-                </div>
-            `).join('');
-            
-            let sum = cart.reduce((a, b) => a + b.price, 0);
-            document.getElementById('cart-total').innerText = 'сумма: ' + sum + ' rub';
-            updateFinalTotal();
-        }
-
-        function removeItem(i) {
-            cart.splice(i, 1);
-            renderCart();
-        }
-
-        function updateFinalTotal() {
-            let sum = cart.reduce((a, b) => a + b.price, 0);
-            let ship = 400;
-            document.getElementById('summary-items').innerText = sum + ' rub';
-            document.getElementById('summary-total').innerText = (sum + ship) + ' rub';
-        }
+        // Проверка формы
+        $('#order-form').on('submit', function(e) {
+            e.preventDefault();
+            $('#pay-total').text($('#final-sum').text());
+            showPage('pay-page');
+        });
 
         function sendOrder() {
-            let orderData = {
-                client: document.getElementById('f_name').value + ' ' + document.getElementById('f_last').value,
-                items: cart,
-                total: document.getElementById('summary-total').innerText,
-                address: document.getElementById('f_city').value + ', ' + document.getElementById('f_addr').value
+            const order = {
+                name: $('#f_name').val(),
+                phone: $('#f_phone').val(),
+                city: $('#f_city').val(),
+                item: $('#p-title').text(),
+                total: $('#final-sum').text()
             };
-            tg.sendData(JSON.stringify(orderData));
+            tg.sendData(JSON.stringify(order));
             tg.close();
         }
     </script>
