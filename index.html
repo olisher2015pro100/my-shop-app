@@ -18,7 +18,7 @@
             --border-color: #222222;
         }
 
-        /* ЖЕСТКИЙ БЕЛЫЙ ЦВЕТ БЕЗ ПОЛУТОНОВ */
+        /* Та самая надпись soon */
         .soon-box { color: #000000 !important; opacity: 1 !important; } 
         body.dark-mode .soon-box { color: #ffffff !important; opacity: 1 !important; }
 
@@ -38,6 +38,7 @@
         .page { display: none; padding: 20px; }
         .active { display: block !important; }
 
+        /* КАТАЛОГ */
         .catalog-grid { 
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; 
             max-width: 1000px; margin: 40px auto; 
@@ -47,48 +48,33 @@
         .img-container { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; overflow: hidden; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        .product-layout { 
-            display: flex; gap: 50px; max-width: 1100px; margin: 20px auto; align-items: flex-start; 
+        /* ОФОРМЛЕНИЕ ЗАКАЗА (INPUTS) */
+        input {
+            width: 100%; padding: 18px; box-sizing: border-box;
+            background: transparent; border: 1px solid var(--text-color);
+            color: var(--text-color); font-family: inherit; font-size: 14px;
+            outline: none; transition: 0.3s;
         }
-        .product-media { flex: 1.2; max-width: 550px; position: sticky; top: 20px; }
-        .product-info { flex: 1; display: flex; flex-direction: column; }
+        input:focus { background: rgba(128,128,128,0.1); }
 
-        .swiper { width: 100%; max-height: 75vh; }
-        .swiper-slide img { width: 100%; height: auto; display: block; }
-
-        .size-selector { display: flex; gap: 10px; margin: 20px 0; }
-        .size-btn { 
-            flex: 1; border: 1px solid var(--text-color); padding: 14px; text-align: center; 
-            cursor: pointer; transition: 0.2s; font-size: 14px; font-weight: 600;
-        }
-        .size-btn:hover { background: var(--text-color); color: var(--bg-color); opacity: 0.7; }
-        .size-btn.selected { background: var(--text-color); color: var(--bg-color); }
-
+        /* КНОПКИ */
         .action-btn { 
             width: 100%; background: var(--text-color); color: var(--bg-color); 
             border: none; padding: 22px; cursor: pointer; font-family: inherit; 
-            font-size: 16px; transition: 0.3s; 
+            font-size: 16px; transition: 0.3s; font-weight: 600;
         }
         .action-btn:hover { opacity: 0.8; }
 
+        /* КОРЗИНА */
         #cart-panel { 
             position: fixed; top: 0; right: -100%; width: 380px; height: 100%; 
             background: var(--bg-color); z-index: 2000; transition: 0.4s; 
             display: flex; flex-direction: column; border-left: 1px solid var(--border-color);
         }
         #cart-panel.open { right: 0; }
-        .qty-wrap { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-        .qty-btn { 
-            width: 26px; height: 26px; border: 1px solid var(--text-color); 
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
-        }
-        .qty-btn:hover { background: var(--text-color); color: var(--bg-color); }
-
         #mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1999; display: none; }
 
         @media (max-width: 850px) {
-            .product-layout { flex-direction: column; }
-            .product-media { position: relative; max-width: 100%; }
             .catalog-grid { grid-template-columns: 1fr; }
             #cart-panel { width: 100%; }
         }
@@ -124,23 +110,35 @@
 
     <div id="product" class="page">
         <div onclick="showPage('home')" style="cursor:pointer; opacity:0.5; margin-bottom:20px;">← назад</div>
-        <div class="product-layout">
-            <div class="product-media">
+        <div style="display: flex; gap: 50px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 300px;">
                 <div class="swiper mySwiper">
                     <div class="swiper-wrapper" id="slides"></div>
-                    <div class="swiper-button-next" style="color:var(--text-color)"></div>
-                    <div class="swiper-button-prev" style="color:var(--text-color)"></div>
                 </div>
             </div>
-            <div class="product-info">
-                <h1 id="p-title" style="margin:0; font-size:28px;"></h1>
-                <div id="p-price" style="font-size:20px; margin:10px 0 25px; font-weight:600;"></div>
-                <div id="p-desc" style="font-size:15px; line-height:1.7; white-space:pre-line; margin-bottom:30px;"></div>
-                <div class="size-selector">
-                    <div class="size-btn" onclick="setSize(this)">baby-size</div>
-                    <div class="size-btn" onclick="setSize(this)">big-size</div>
+            <div style="flex: 1; min-width: 300px;">
+                <h1 id="p-title"></h1>
+                <div id="p-price" style="font-weight:600; margin-bottom:20px;"></div>
+                <div id="p-desc" style="white-space: pre-line; font-size: 14px; opacity: 0.8; margin-bottom: 20px;"></div>
+                <button class="action-btn" onclick="add('big-size')">добавить big-size</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkout" class="page">
+        <div onclick="showPage('home')" style="cursor:pointer; opacity:0.5; margin-bottom:20px;">← назад в магазин</div>
+        <div style="max-width: 500px; margin: 0 auto;">
+            <h2 style="margin-bottom:30px;">оформление заказа</h2>
+            <div style="display:grid; gap:15px;">
+                <input type="text" id="order-name" placeholder="фио">
+                <input type="text" id="order-address" placeholder="город / адрес">
+                <input type="text" id="order-phone" placeholder="номер телефона">
+                <input type="text" id="order-tg" placeholder="тг для связи (@)">
+                
+                <div style="margin-top:10px; padding:15px; border:1px dashed var(--text-color); font-size:12px; opacity:0.6;">
+                    после нажатия «подтвердить» мы свяжемся с тобой в telegram для оплаты.
                 </div>
-                <button class="action-btn" onclick="add()">в корзину</button>
+                <button class="action-btn" onclick="confirmOrder()">подтвердить заказ</button>
             </div>
         </div>
     </div>
@@ -156,7 +154,7 @@
             <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:600;">
                 <span>итого</span><span id="total">0 rub</span>
             </div>
-            <button class="action-btn">оформить</button>
+            <button class="action-btn" onclick="goToCheckout()">оформить</button>
         </div>
     </div>
 
@@ -164,14 +162,13 @@
     <script>
         let cart = [];
         let cur = null;
-        let swiper = null;
 
         const data = {
             zip: {
                 title: 'zip-hoode / "snich"',
                 price: 4500,
-                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
-                desc: `new drop\nоверсайз крой\nткань:футер 3-х нитка /кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70`
+                imgs: ['zip-hoode.jpg'],
+                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка'
             }
         };
 
@@ -186,18 +183,8 @@
             document.getElementById('p-title').innerText = cur.title;
             document.getElementById('p-price').innerText = cur.price + ' rub';
             document.getElementById('p-desc').innerText = cur.desc;
-            document.getElementById('slides').innerHTML = cur.imgs.map(s => `<div class="swiper-slide"><img src="${s}"></div>`).join('');
+            document.getElementById('slides').innerHTML = `<div class="swiper-slide"><img src="${cur.imgs[0]}" style="width:100%"></div>`;
             showPage('product');
-            if(swiper) swiper.destroy();
-            swiper = new Swiper(".mySwiper", { 
-                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-                loop: true
-            });
-        }
-
-        function setSize(el) {
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-            el.classList.add('selected');
         }
 
         function toggleCart(open) {
@@ -205,42 +192,43 @@
             document.getElementById('mask').style.display = open ? 'block' : 'none';
         }
 
-        function add() {
-            const s = document.querySelector('.size-btn.selected');
-            if(!s) return alert('выберите размер');
-            const exist = cart.find(i => i.size === s.innerText);
-            if(exist) exist.qty++; else cart.push({ ...cur, size: s.innerText, qty: 1 });
+        function add(size) {
+            cart.push({ ...cur, size, qty: 1 });
             renderCart();
             toggleCart(true);
         }
 
-        function changeQty(idx, d) {
-            cart[idx].qty += d;
-            if(cart[idx].qty < 1) cart.splice(idx, 1);
-            renderCart();
-        }
-
         function renderCart() {
             const list = document.getElementById('cart-content');
-            const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+            const total = cart.reduce((a, b) => a + b.price, 0);
             document.getElementById('count').innerText = cart.length;
             document.getElementById('total').innerText = total + ' rub';
             if(cart.length === 0) { list.innerHTML = '<div style="opacity:0.3;text-align:center;">пусто</div>'; return; }
             list.innerHTML = cart.map((item, i) => `
-                <div style="display:flex; gap:15px; margin-bottom:20px;">
-                    <img src="${item.imgs[0]}" style="width:60px; height:80px; object-fit:cover;">
-                    <div style="flex:1; font-size:12px;">
+                <div style="display:flex; gap:15px; margin-bottom:20px; font-size:12px;">
+                    <div style="flex:1;">
                         <div style="font-weight:600;">${item.title}</div>
                         <div style="opacity:0.6;">размер: ${item.size}</div>
-                        <div class="qty-wrap">
-                            <div class="qty-btn" onclick="changeQty(${i},-1)">-</div>
-                            <span>${item.qty}</span>
-                            <div class="qty-btn" onclick="changeQty(${i},1)">+</div>
-                        </div>
+                        <div style="cursor:pointer; text-decoration:underline; margin-top:5px;" onclick="cart.splice(${i},1);renderCart();">удалить</div>
                     </div>
-                    <div style="font-weight:600;">${item.price * item.qty}</div>
+                    <div style="font-weight:600;">${item.price} rub</div>
                 </div>
             `).join('');
+        }
+
+        function goToCheckout() {
+            if (cart.length === 0) return alert('корзина пуста');
+            toggleCart(false);
+            showPage('checkout');
+        }
+
+        function confirmOrder() {
+            const name = document.getElementById('order-name').value;
+            if(!name) return alert('заполни данные');
+            alert('заказ принят! скоро свяжемся.');
+            cart = [];
+            renderCart();
+            showPage('home');
         }
     </script>
 </body>
