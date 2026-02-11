@@ -2,130 +2,104 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mister snich</title>
-    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
-
     <style>
         body { 
             font-family: 'Courier New', monospace; background: #fff; margin: 0; 
             text-transform: lowercase; color: #000;
         }
 
+        /* КОНТЕЙНЕРЫ ПЕРЕКЛЮЧЕНИЯ */
         .page { display: none; padding: 20px; box-sizing: border-box; }
         .active { display: block !important; }
 
-        /* КАТАЛОГ */
-        .catalog-container { max-width: 1200px; margin: 0 auto; padding-top: 40px; }
-        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-        .catalog-item { cursor: pointer; text-decoration: none; color: inherit; }
-        .catalog-item img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 4px; }
-
-        /* КАРТОЧКА ТОВАРА (СТИЛЬ КАК НА СКРИНЕ) */
-        .product-container { 
-            display: flex; gap: 40px; max-width: 1300px; margin: 0 auto; padding: 20px; 
+        /* ГЛАВНЫЙ ЭКРАН - СЕТКА ТОВАРОВ */
+        .catalog-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 400px)); 
+            gap: 40px; 
+            margin-top: 20px;
         }
-        .product-gallery { flex: 2; display: flex; flex-direction: column; gap: 10px; }
-        .product-gallery img { width: 100%; object-fit: cover; }
+        .item-card { cursor: pointer; }
+        .item-card img { width: 100%; height: auto; display: block; background: #f0f0f0; }
+        .item-info { margin-top: 10px; font-size: 14px; }
+
+        /* СТРАНИЦА ТОВАРА - НОРМАЛЬНЫЙ ВИД */
+        .product-content { 
+            display: flex; 
+            gap: 40px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .gallery-container { flex: 1; }
+        .gallery-container img { width: 100%; height: auto; display: block; }
         
-        .product-info { 
-            flex: 1; position: sticky; top: 20px; height: fit-content; 
-            display: flex; flex-direction: column; gap: 15px;
-        }
+        .info-container { flex: 0 0 350px; }
 
-        /* Адаптив для телефона */
-        @media (max-width: 800px) {
-            .product-container { flex-direction: column; }
-            .product-info { position: static; }
-        }
-
-        h1 { font-size: 28px; margin: 0; font-weight: normal; }
-        .price { font-size: 22px; margin-bottom: 10px; }
-
-        /* КНОПКИ РАЗМЕРОВ */
-        .size-label { font-size: 14px; margin-bottom: 5px; opacity: 0.6; }
-        .size-row { display: flex; gap: 10px; margin-bottom: 20px; }
-        .size-btn { 
-            flex: 1; padding: 12px; border: 1px solid #e0e0e0; background: #fff;
-            cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.2s;
-        }
-        .size-btn.selected { border-color: #000; background: #f5f5f5; font-weight: bold; }
-
-        /* ОПИСАНИЕ */
-        .description-text { 
-            font-size: 13px; line-height: 1.6; white-space: pre-line; 
-            border-top: 1px solid #eee; padding-top: 20px; margin-top: 10px;
-        }
-
-        .buy-btn { 
-            background: #000; color: #fff; border: none; padding: 20px; 
-            font-size: 16px; cursor: pointer; font-family: inherit; margin-top: 10px;
-        }
-
-        .back-btn { cursor: pointer; margin-bottom: 30px; display: inline-block; opacity: 0.5; }
+        /* КНОПКИ И ТЕКСТ */
+        .nav-back { cursor: pointer; opacity: 0.5; margin-bottom: 20px; display: inline-block; }
+        .price-tag { font-size: 20px; margin: 10px 0 30px 0; }
         
-        /* ИНПУТЫ ОФОРМЛЕНИЯ */
-        .checkout-form { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
-        input { padding: 15px; border: 1px solid #ddd; font-family: inherit; font-size: 16px; }
+        .size-selector { margin-bottom: 30px; }
+        .size-list { display: flex; gap: 10px; margin-top: 10px; }
+        .size-option { 
+            flex: 1; padding: 10px; border: 1px solid #000; background: #fff; 
+            cursor: pointer; font-family: inherit; text-align: center;
+        }
+        .size-option.selected { background: #000; color: #fff; }
+
+        .description { font-size: 13px; line-height: 1.6; white-space: pre-line; border-top: 1px solid #eee; padding-top: 20px; }
+        .btn-buy { 
+            width: 100%; background: #000; color: #fff; border: none; 
+            padding: 15px; font-family: inherit; margin-top: 20px; cursor: pointer; 
+        }
+
+        /* Мобильная версия */
+        @media (max-width: 768px) {
+            .product-content { flex-direction: column; }
+            .info-container { flex: none; width: 100%; }
+            .catalog-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="catalog" class="page active">
-        <div class="catalog-container">
-            <div style="margin-bottom: 30px; opacity: 0.5;">items / drop 01</div>
-            <div class="catalog-grid">
-                <div class="catalog-item" onclick="openProduct('zip')">
-                    <img src="zip-hoode.jpg">
-                    <div style="margin-top: 15px;">zip-hoode / "snich"</div>
-                    <div style="opacity: 0.6;">4500 rub</div>
-                </div>
+    <div id="main-page" class="page active">
+        <div style="opacity: 0.5; font-size: 12px;">mister snich / drop 01</div>
+        <div class="catalog-grid">
+            <div class="item-card" onclick="openItem('zip')">
+                <img src="zip-hoode.jpg">
+                <div class="item-info">zip-hoode / "snich" — 4500 rub</div>
+            </div>
+            <div class="item-card" onclick="openItem('tshirt')">
+                <img src="t-shirt-v2.jpg"> <div class="item-info">t-shirt / "v2" — tba</div>
             </div>
         </div>
     </div>
 
-    <div id="product-page" class="page">
-        <div class="product-container">
-            <div class="back-btn" onclick="showPage('catalog')">← назад к коллекции</div>
+    <div id="item-page" class="page">
+        <div class="nav-back" onclick="goTo('main-page')">← назад</div>
+        <div class="product-content">
+            <div class="gallery-container" id="g-list"></div>
             
-            <div class="product-gallery" id="p-gallery">
+            <div class="info-container">
+                <h1 id="g-title" style="font-size: 24px; margin: 0;"></h1>
+                <div class="price-tag" id="g-price"></div>
+
+                <div class="size-selector">
+                    <div>размер:</div>
+                    <div class="size-list">
+                        <button class="size-option" onclick="pickSize(this)">baby-size</button>
+                        <button class="size-option" onclick="pickSize(this)">big-size</button>
+                    </div>
                 </div>
 
-            <div class="product-info">
-                <h1 id="p-title"></h1>
-                <div class="price" id="p-price"></div>
-                
-                <div class="size-label">выберите размер:</div>
-                <div class="size-row">
-                    <button class="size-btn" onclick="selectSize(this)">baby-size</button>
-                    <button class="size-btn" onclick="selectSize(this)">big-size</button>
-                </div>
-
-                <div class="description-text" id="p-desc"></div>
-                
-                <button class="buy-btn" onclick="goToCheckout()">в корзину</button>
-                <div style="font-size: 11px; opacity: 0.4; margin-top: 10px;">доставка и возврат / размерная сетка</div>
+                <div class="description" id="g-desc"></div>
+                <button class="btn-buy" onclick="tg.sendData('order_click')">в корзину</button>
             </div>
-        </div>
-    </div>
-
-    <div id="checkout-page" class="page">
-        <div class="checkout-form">
-            <div class="back-btn" onclick="showPage('product-page')">← назад</div>
-            <h2>оформление заказа</h2>
-            <input type="text" id="f_name" placeholder="имя и фамилия" required>
-            <input type="tel" id="f_phone" placeholder="телефон" required>
-            <input type="text" id="f_addr" placeholder="город, улица, дом" required>
-            <input type="text" id="f_zip" placeholder="индекс" required>
-            <div style="padding: 20px; background: #f9f9f9; display: flex; justify-content: space-between;">
-                <span>итого (+400 дост.):</span>
-                <span id="final-sum" style="font-weight: bold;"></span>
-            </div>
-            <button class="buy-btn" onclick="submitOrder()">оплатить</button>
         </div>
     </div>
 
@@ -133,67 +107,41 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let selectedSize = "";
-        const products = {
+        const data = {
             zip: {
-                title: 'zip-hoode / "snich"',
-                price: 4500,
-                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'], // Добавь свои файлы
-                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70\n\n400 rub shipping`
+                name: 'zip-hoode / "snich"',
+                price: '4500 rub',
+                images: ['zip-hoode.jpg'],
+                text: `new drop\nоверсайз крой\nткань: футер 3-х нитка\nbaby size (m-l) / big size (xl+)\n400 rub shipping`
+            },
+            tshirt: {
+                name: 't-shirt / "v2"',
+                price: 'tba',
+                images: ['t-shirt-v2.jpg'], 
+                text: `coming soon\nnew drop / collection 01`
             }
         };
 
-        function showPage(id) {
+        function goTo(id) {
             $('.page').removeClass('active');
             $('#' + id).addClass('active');
             window.scrollTo(0,0);
         }
 
-        function openProduct(id) {
-            const p = products[id];
-            $('#p-title').text(p.title);
-            $('#p-price').text(p.price + ' rub');
-            $('#p-desc').text(p.desc);
-            $('#final-sum').text((p.price + 400) + ' rub');
-            
-            // Загружаем галерею списком вниз
-            $('#p-gallery').html(p.imgs.map(src => `<img src="${src}">`).join(''));
-            
-            selectedSize = "";
-            $('.size-btn').removeClass('selected');
-            showPage('product-page');
+        function openItem(id) {
+            const item = data[id];
+            $('#g-title').text(item.name);
+            $('#g-price').text(item.price);
+            $('#g-desc').text(item.text);
+            $('#g-list').html(item.images.map(i => `<img src="${i}">`).join(''));
+            $('.size-option').removeClass('selected');
+            goTo('item-page');
         }
 
-        function selectSize(btn) {
-            $('.size-btn').removeClass('selected');
-            $(btn).addClass('selected');
-            selectedSize = $(btn).text();
+        function pickSize(el) {
+            $('.size-option').removeClass('selected');
+            $(el).addClass('selected');
         }
-
-        function goToCheckout() {
-            if(!selectedSize) { alert('выберите размер'); return; }
-            showPage('checkout-page');
-        }
-
-        function submitOrder() {
-            const data = {
-                customer: $('#f_name').val(),
-                phone: $('#f_phone').val(),
-                address: $('#f_addr').val(),
-                item: $('#p-title').text() + " (" + selectedSize + ")",
-                total: $('#final-sum').text()
-            };
-            if(!data.customer || !data.phone) { alert('заполните данные'); return; }
-            tg.sendData(JSON.stringify(data));
-        }
-
-        // Подсказки Дадаты
-        const dToken = "a3e3730b70eb4d2c079c26af9a68a870a9658d62";
-        $("#f_name").suggestions({ token: dToken, type: "NAME" });
-        $("#f_addr").suggestions({
-            token: dToken, type: "ADDRESS",
-            onSelect: function(s) { if(s.data.postal_code) $('#f_zip').val(s.data.postal_code); }
-        });
     </script>
 </body>
 </html>
