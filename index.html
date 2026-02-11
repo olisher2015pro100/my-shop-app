@@ -18,9 +18,9 @@
             --border-color: #222222;
         }
 
-        /* КРИТИЧЕСКАЯ ПРАВКА ДЛЯ НАДПИСИ SOON */
-        .soon-box { color: #000000 !important; } 
-        body.dark-mode .soon-box { color: #ffffff !important; }
+        /* ЖЕСТКИЙ БЕЛЫЙ ЦВЕТ БЕЗ ПОЛУТОНОВ */
+        .soon-box { color: #000000 !important; opacity: 1 !important; } 
+        body.dark-mode .soon-box { color: #ffffff !important; opacity: 1 !important; }
 
         body { 
             font-family: var(--main-font); background: var(--bg-color); color: var(--text-color);
@@ -112,12 +112,12 @@
                 <div>4500 rub</div>
             </div>
             
-            <div class="product-card" style="cursor:default; opacity:0.6;">
-                <div class="img-container soon-box" style="display:flex; align-items:center; justify-content:center; font-weight:600; font-size:20px;">
+            <div class="product-card" style="cursor:default;">
+                <div class="img-container soon-box" style="display:flex; align-items:center; justify-content:center; font-weight:600; font-size:24px; background: rgba(128,128,128,0.2);">
                     soon
                 </div>
-                <div style="margin-top:15px; font-weight:600;">t-shirt / "snich"</div>
-                <div>???? rub</div>
+                <div style="margin-top:15px; font-weight:600; opacity: 0.4;">t-shirt / "snich"</div>
+                <div style="opacity: 0.4;">???? rub</div>
             </div>
         </div>
     </div>
