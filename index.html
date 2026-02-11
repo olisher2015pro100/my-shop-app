@@ -44,7 +44,7 @@
         .img-container { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; overflow: hidden; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* СТРАНИЦА ТОВАРА - ТВОЯ РАБОЧАЯ ВЕРСТКА */
+        /* СТРАНИЦА ТОВАРА */
         .product-layout { 
             display: flex; gap: 50px; max-width: 1100px; margin: 20px auto; align-items: flex-start; 
         }
@@ -54,7 +54,7 @@
         .swiper { width: 100%; max-height: 75vh; }
         .swiper-slide img { width: 100%; height: auto; display: block; }
 
-        /* КНОПКИ С УВЕЛИЧЕННЫМ ШРИФТОМ */
+        /* КНОПКИ */
         .size-selector { display: flex; gap: 10px; margin: 20px 0; }
         .size-btn { 
             flex: 1; border: 1px solid var(--text-color); padding: 14px; text-align: center; 
@@ -112,7 +112,7 @@
                 <div>4500 rub</div>
             </div>
             <div class="product-card" style="cursor:default; opacity:0.4;">
-                <div class="img-container" style="display:flex; align-items:center; justify-content:center; font-weight:600;">soon</div>
+                <div class="img-container" style="display:flex; align-items:center; justify-content:center; font-weight:600; color:var(--text-color);">soon</div>
                 <div style="margin-top:15px; font-weight:600;">t-shirt / "snich"</div>
                 <div>???? rub</div>
             </div>
@@ -130,7 +130,10 @@
                 </div>
             </div>
             <div class="product-info">
-                <h1 id="p-title" style="margin:0; font-size:28px;"></h1> <div id="p-price" style="font-size:20px; margin:10px 0 25px; font-weight:600;"></div> <div id="p-desc" style="font-size:15px; line-height:1.7; white-space:pre-line; margin-bottom:30px;"></div> <div class="size-selector">
+                <h1 id="p-title" style="margin:0; font-size:28px;"></h1>
+                <div id="p-price" style="font-size:20px; margin:10px 0 25px; font-weight:600;"></div>
+                <div id="p-desc" style="font-size:15px; line-height:1.7; white-space:pre-line; margin-bottom:30px;"></div>
+                <div class="size-selector">
                     <div class="size-btn" onclick="setSize(this)">baby-size</div>
                     <div class="size-btn" onclick="setSize(this)">big-size</div>
                 </div>
