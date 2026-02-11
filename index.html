@@ -29,16 +29,31 @@
             padding: 15px 20px; border-bottom: 1px solid var(--border-color);
             position: sticky; top: 0; background: var(--bg-color); z-index: 1000;
         }
-        .nav-link { cursor: pointer; text-decoration: underline; transition: 0.3s; }
-        .nav-link:hover { opacity: 0.5; }
+        
+        /* ТЕМА И КОРЗИНА В ОДНУ СТРОКУ */
+        .header-right { display: flex; gap: 20px; align-items: center; }
+        .nav-link { cursor: pointer; text-decoration: underline; white-space: nowrap; }
 
         .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .active { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* ИСПРАВЛЕНИЕ DADATA ПОД ТЕМНУЮ ТЕМУ */
+        .suggestions-suggestions {
+            background: var(--bg-color) !important;
+            color: var(--text-color) !important;
+            border: 1px solid var(--border-color) !important;
+            font-family: var(--main-font) !important;
+        }
+        .suggestions-suggestion:hover { background: var(--border-color) !important; }
+        .suggestions-promo { display: none !important; } /* убираем лого */
+        .suggestions-addon { display: none !important; }
+
+        /* КАТАЛОГ */
         .catalog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; max-width: 1000px; margin: 40px auto; }
         .product-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; cursor: pointer; }
 
+        /* ТОВАР */
         .product-layout { display: flex; gap: 40px; max-width: 1000px; margin: 0 auto; align-items: flex-start; }
         .product-media { flex: 1.2; max-width: 500px; width: 100%; }
         .product-info { flex: 1; display: flex; flex-direction: column; }
@@ -51,7 +66,7 @@
             flex: 1; border: 1px solid var(--text-color); padding: 12px; text-align: center; 
             cursor: pointer; transition: 0.2s; font-size: 13px; background: transparent; color: var(--text-color);
         }
-        .size-btn:hover { background: var(--text-color); color: var(--bg-color); }
+        .size-btn:hover { background: var(--text-color); color: var(--bg-color); opacity: 0.8; }
         .size-btn.selected { background: var(--text-color); color: var(--bg-color); }
 
         .action-btn { 
@@ -66,7 +81,7 @@
             background: transparent; border: 1px solid var(--text-color);
             color: var(--text-color); font-family: inherit; outline: none;
         }
-        input:read-only { opacity: 0.7; background: rgba(128,128,128,0.05); }
+        input:read-only { opacity: 0.5; }
 
         #cart-panel { 
             position: fixed; top: 0; right: -100%; width: 350px; height: 100%; 
@@ -79,7 +94,6 @@
         @media (max-width: 768px) {
             .catalog-grid { grid-template-columns: 1fr; }
             .product-layout { flex-direction: column; }
-            #cart-panel { width: 100%; }
         }
     </style>
 </head>
@@ -122,7 +136,6 @@
                 <h1 id="p-title" style="margin:0 0 10px 0;"></h1>
                 <div id="p-price" style="font-size:20px; font-weight:600; margin-bottom:20px;"></div>
                 <div id="p-desc" style="white-space: pre-line; font-size:13px; line-height:1.6; margin-bottom:30px;"></div>
-                
                 <div style="font-size: 12px; margin-bottom: 10px; opacity: 0.6;">выберите размер:</div>
                 <div class="size-selector">
                     <div class="size-btn" onclick="selectSize(this)">baby-size</div>
@@ -179,7 +192,7 @@
             }
         };
 
-        // ВКЛЮЧАЕМ DADATA С ТВОИМ КЛЮЧОМ
+        // НАСТРОЙКА DADATA
         $("#address").suggestions({
             token: "1ed0eebc35156fe4fe197c5dd676354f40bfd073",
             type: "ADDRESS",
@@ -205,13 +218,8 @@
             $("#p-price").text(curItem.price + ' rub');
             $("#p-desc").text(curItem.desc);
             $("#slides").html(curItem.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join(''));
-
             if(swiper) swiper.destroy();
-            swiper = new Swiper(".mySwiper", {
-                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-                loop: true
-            });
-
+            swiper = new Swiper(".mySwiper", { navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }, loop: true });
             $(".size-btn").removeClass("selected");
             showPage('product');
         }
@@ -238,12 +246,10 @@
             let total = cart.reduce((sum, i) => sum + i.price, 0);
             $("#count").text(cart.length);
             $("#total-price").text(total + ' rub');
-            
             if(cart.length === 0) {
                 $("#cart-items").html('<div style="text-align:center; opacity:0.3; margin-top:50px;">пусто</div>');
                 return;
             }
-
             $("#cart-items").html(cart.map((item, i) => `
                 <div style="display:flex; gap:15px; margin-bottom:20px; font-size:12px;">
                     <img src="${item.imgs[0]}" style="width:60px; height:80px; object-fit:cover;">
@@ -265,7 +271,7 @@
 
         function finishOrder() {
             if(!$("#name").val() || !$("#address").val()) return alert('заполни данные');
-            alert('заказ принят! скоро свяжемся.');
+            alert('заказ принят!');
             cart = []; updateCart(); showPage('home');
         }
     </script>
