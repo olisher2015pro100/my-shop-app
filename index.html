@@ -17,12 +17,15 @@
             --text-color: #ffffff;
             --border-color: #222222;
         }
+        /* ГАРАНТИРОВАННАЯ СМЕНА ЦВЕТА ДЛЯ SOON */
+        .soon-box { color: #000000 !important; }
+        body.dark-mode .soon-box { color: #ffffff !important; }
+
         body { 
             font-family: var(--main-font); background: var(--bg-color); color: var(--text-color);
             margin: 0; text-transform: lowercase; transition: background 0.3s; overflow-x: hidden;
         }
 
-        /* HEADER */
         header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 15px 20px; border-bottom: 1px solid var(--border-color); 
@@ -34,7 +37,6 @@
         .page { display: none; padding: 20px; }
         .active { display: block !important; }
 
-        /* КАТАЛОГ */
         .catalog-grid { 
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; 
             max-width: 1000px; margin: 40px auto; 
@@ -44,7 +46,6 @@
         .img-container { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; overflow: hidden; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* СТРАНИЦА ТОВАРА */
         .product-layout { 
             display: flex; gap: 50px; max-width: 1100px; margin: 20px auto; align-items: flex-start; 
         }
@@ -54,7 +55,6 @@
         .swiper { width: 100%; max-height: 75vh; }
         .swiper-slide img { width: 100%; height: auto; display: block; }
 
-        /* КНОПКИ */
         .size-selector { display: flex; gap: 10px; margin: 20px 0; }
         .size-btn { 
             flex: 1; border: 1px solid var(--text-color); padding: 14px; text-align: center; 
@@ -70,7 +70,6 @@
         }
         .action-btn:hover { opacity: 0.8; }
 
-        /* КОРЗИНА */
         #cart-panel { 
             position: fixed; top: 0; right: -100%; width: 380px; height: 100%; 
             background: var(--bg-color); z-index: 2000; transition: 0.4s; 
@@ -113,7 +112,7 @@
             </div>
             
             <div class="product-card" style="cursor:default; opacity:0.4;">
-                <div class="img-container" style="display:flex; align-items:center; justify-content:center; font-weight:600; color:var(--text-color) !important;">
+                <div class="img-container soon-box" style="display:flex; align-items:center; justify-content:center; font-weight:600;">
                     soon
                 </div>
                 <div style="margin-top:15px; font-weight:600;">t-shirt / "snich"</div>
