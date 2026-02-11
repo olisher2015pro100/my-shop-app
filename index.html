@@ -44,7 +44,7 @@
         .img-container { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; overflow: hidden; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* СТРАНИЦА ТОВАРА - ФИКС СЪЕЗДА */
+        /* СТРАНИЦА ТОВАРА - ТВОЯ РАБОЧАЯ ВЕРСТКА */
         .product-layout { 
             display: flex; gap: 50px; max-width: 1100px; margin: 20px auto; align-items: flex-start; 
         }
@@ -54,18 +54,19 @@
         .swiper { width: 100%; max-height: 75vh; }
         .swiper-slide img { width: 100%; height: auto; display: block; }
 
-        /* КНОПКИ */
+        /* КНОПКИ С УВЕЛИЧЕННЫМ ШРИФТОМ */
         .size-selector { display: flex; gap: 10px; margin: 20px 0; }
         .size-btn { 
-            flex: 1; border: 1px solid var(--text-color); padding: 12px; text-align: center; 
-            cursor: pointer; transition: 0.2s; 
+            flex: 1; border: 1px solid var(--text-color); padding: 14px; text-align: center; 
+            cursor: pointer; transition: 0.2s; font-size: 14px; font-weight: 600;
         }
         .size-btn:hover { background: var(--text-color); color: var(--bg-color); opacity: 0.7; }
         .size-btn.selected { background: var(--text-color); color: var(--bg-color); }
 
         .action-btn { 
             width: 100%; background: var(--text-color); color: var(--bg-color); 
-            border: none; padding: 20px; cursor: pointer; font-family: inherit; transition: 0.3s; 
+            border: none; padding: 22px; cursor: pointer; font-family: inherit; 
+            font-size: 16px; transition: 0.3s; 
         }
         .action-btn:hover { opacity: 0.8; }
 
@@ -129,10 +130,7 @@
                 </div>
             </div>
             <div class="product-info">
-                <h1 id="p-title" style="margin:0; font-size:24px;"></h1>
-                <div id="p-price" style="font-size:18px; margin:10px 0 25px; font-weight:600;"></div>
-                <div id="p-desc" style="font-size:13px; line-height:1.6; white-space:pre-line; margin-bottom:30px;"></div>
-                <div class="size-selector">
+                <h1 id="p-title" style="margin:0; font-size:28px;"></h1> <div id="p-price" style="font-size:20px; margin:10px 0 25px; font-weight:600;"></div> <div id="p-desc" style="font-size:15px; line-height:1.7; white-space:pre-line; margin-bottom:30px;"></div> <div class="size-selector">
                     <div class="size-btn" onclick="setSize(this)">baby-size</div>
                     <div class="size-btn" onclick="setSize(this)">big-size</div>
                 </div>
@@ -167,7 +165,7 @@
                 title: 'zip-hoode / "snich"',
                 price: 4500,
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
-                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка\n\nbaby-size: 65/75см\nbig-size: 70/80см`
+                desc: `new drop\nоверсайз крой\nткань:футер 3-х нитка /кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70`
             }
         };
 
@@ -185,7 +183,10 @@
             document.getElementById('slides').innerHTML = cur.imgs.map(s => `<div class="swiper-slide"><img src="${s}"></div>`).join('');
             showPage('product');
             if(swiper) swiper.destroy();
-            swiper = new Swiper(".mySwiper", { navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" } });
+            swiper = new Swiper(".mySwiper", { 
+                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                loop: true
+            });
         }
 
         function setSize(el) {
