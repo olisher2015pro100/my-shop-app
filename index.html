@@ -19,10 +19,6 @@
             --border-color: #222222;
         }
 
-        /* Белый soon в темной теме */
-        .soon-box { color: #000000 !important; opacity: 1 !important; } 
-        body.dark-mode .soon-box { color: #ffffff !important; opacity: 1 !important; }
-
         body { 
             font-family: var(--main-font); background: var(--bg-color); color: var(--text-color);
             margin: 0; text-transform: lowercase; transition: background 0.3s; overflow-x: hidden;
@@ -40,43 +36,38 @@
         .active { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .catalog-grid { 
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; 
-            max-width: 1000px; margin: 40px auto; 
-        }
+        .catalog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; max-width: 1000px; margin: 40px auto; }
+        .product-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; cursor: pointer; }
 
-        .product-layout { 
-            display: flex; gap: 40px; max-width: 1000px; margin: 0 auto; align-items: flex-start; 
-        }
+        .product-layout { display: flex; gap: 40px; max-width: 1000px; margin: 0 auto; align-items: flex-start; }
         .product-media { flex: 1.2; max-width: 500px; width: 100%; }
-        .product-info { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+        .product-info { flex: 1; display: flex; flex-direction: column; }
 
         .swiper { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* ИСПРАВЛЕННЫЕ КНОПКИ С ХОВЕРОМ */
-        .size-selector { display: flex; gap: 10px; margin: 20px 0; width: 100%; }
+        .size-selector { display: flex; gap: 10px; margin: 20px 0; }
         .size-btn { 
             flex: 1; border: 1px solid var(--text-color); padding: 12px; text-align: center; 
             cursor: pointer; transition: 0.2s; font-size: 13px; background: transparent; color: var(--text-color);
         }
-        .size-btn:hover { background: var(--text-color); color: var(--bg-color); } /* Яркий инверт при наведении */
+        .size-btn:hover { background: var(--text-color); color: var(--bg-color); }
         .size-btn.selected { background: var(--text-color); color: var(--bg-color); }
 
         .action-btn { 
             width: 100%; background: var(--text-color); color: var(--bg-color); 
-            border: 1px solid var(--text-color); padding: 20px; cursor: pointer; font-family: inherit; 
+            border: none; padding: 20px; cursor: pointer; font-family: inherit; 
             font-size: 16px; font-weight: 600; transition: 0.3s;
         }
-        .action-btn:hover { opacity: 0.7; transform: translateY(-1px); } /* Видимый эффект */
+        .action-btn:hover { opacity: 0.7; }
 
         input {
             width: 100%; padding: 15px; margin-bottom: 15px; box-sizing: border-box;
             background: transparent; border: 1px solid var(--text-color);
             color: var(--text-color); font-family: inherit; outline: none;
         }
+        input:read-only { opacity: 0.7; background: rgba(128,128,128,0.05); }
 
-        /* КОРЗИНА */
         #cart-panel { 
             position: fixed; top: 0; right: -100%; width: 350px; height: 100%; 
             background: var(--bg-color); z-index: 2000; transition: 0.4s; 
@@ -88,6 +79,7 @@
         @media (max-width: 768px) {
             .catalog-grid { grid-template-columns: 1fr; }
             .product-layout { flex-direction: column; }
+            #cart-panel { width: 100%; }
         }
     </style>
 </head>
@@ -104,16 +96,12 @@
     <div id="home" class="page active">
         <div class="catalog-grid">
             <div class="product-card" onclick="loadItem('zip')">
-                <div style="width:100%; aspect-ratio:3/4; background:#f9f9f9; overflow:hidden;">
-                    <img src="zip-hoode.jpg" style="width:100%; height:100%; object-fit:cover;">
-                </div>
+                <img src="zip-hoode.jpg">
                 <div style="margin-top:15px; font-weight:600;">zip-hoode / "snich"</div>
                 <div>4500 rub</div>
             </div>
             <div class="product-card">
-                <div class="soon-box" style="width:100%; aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:24px; background: rgba(128,128,128,0.1);">
-                    soon
-                </div>
+                <div style="width:100%; aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:24px; background: rgba(128,128,128,0.1);">soon</div>
                 <div style="margin-top:15px; font-weight:600; opacity: 0.4;">t-shirt / "snich"</div>
                 <div style="opacity: 0.4;">???? rub</div>
             </div>
@@ -150,7 +138,8 @@
         <div style="max-width: 450px; margin: 40px auto;">
             <h2 style="margin-bottom:30px;">оформление заказа</h2>
             <input type="text" id="name" placeholder="фио">
-            <input type="text" id="address" placeholder="город / адрес (подсказки dadata)">
+            <input type="text" id="address" placeholder="город / адрес">
+            <input type="text" id="postal_code" placeholder="почтовый индекс" readonly>
             <input type="text" id="tg" placeholder="telegram (@)">
             <button class="action-btn" style="margin-top:10px;" onclick="finishOrder()">подтвердить заказ</button>
         </div>
@@ -186,14 +175,21 @@
                 title: 'zip-hoode / "snich"',
                 price: 4500,
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
-                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка\n\nbaby size (m-l) 65/75см\nbig size (xl+) 70/80см'
+                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70'
             }
         };
 
-        // Инициализация Dadata
+        // ВКЛЮЧАЕМ DADATA С ТВОИМ КЛЮЧОМ
         $("#address").suggestions({
-            token: "ТВОЙ_API_KEY_ТУТ", // ВСТАВЬ СВОЙ КЛЮЧ
-            type: "ADDRESS"
+            token: "1ed0eebc35156fe4fe197c5dd676354f40bfd073",
+            type: "ADDRESS",
+            onSelect: function(suggestion) {
+                if (suggestion.data.postal_code) {
+                    $("#postal_code").val(suggestion.data.postal_code);
+                } else {
+                    $("#postal_code").val("").attr("placeholder", "введите индекс вручную").removeAttr("readonly");
+                }
+            }
         });
 
         function showPage(id) {
@@ -208,7 +204,6 @@
             $("#p-title").text(curItem.title);
             $("#p-price").text(curItem.price + ' rub');
             $("#p-desc").text(curItem.desc);
-            
             $("#slides").html(curItem.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join(''));
 
             if(swiper) swiper.destroy();
@@ -270,10 +265,8 @@
 
         function finishOrder() {
             if(!$("#name").val() || !$("#address").val()) return alert('заполни данные');
-            alert('заказ принят!');
-            cart = [];
-            updateCart();
-            showPage('home');
+            alert('заказ принят! скоро свяжемся.');
+            cart = []; updateCart(); showPage('home');
         }
     </script>
 </body>
