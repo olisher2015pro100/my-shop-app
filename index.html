@@ -20,14 +20,22 @@
         .btn-black { width: 100%; background: #000; color: #fff; border: none; padding: 18px; border-radius: 8px; font-weight: bold; cursor: pointer; -webkit-appearance: none; }
         
         .catalog-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; }
+        
+        /* СЛАЙДЕР И СТРЕЛКИ */
         .swiper { width: 100%; aspect-ratio: 1/1; border-radius: 12px; margin-bottom: 20px; position: relative; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Стиль стрелок для ПК */
-        .swiper-button-next, .swiper-button-prev { color: #000 !important; transform: scale(0.7); }
-        .swiper-button-next:after, .swiper-button-prev:after { font-size: 24px !important; font-weight: bold; }
+        /* Делаем стрелки заметными */
+        .swiper-button-next, .swiper-button-prev { 
+            color: #000 !important; 
+            background: rgba(255,255,255,0.3); 
+            width: 40px !important; 
+            height: 40px !important; 
+            border-radius: 50%;
+        }
+        .swiper-button-next:after, .swiper-button-prev:after { font-size: 18px !important; font-weight: bold; }
         
-        /* Скрываем стрелки на мобилках, где есть тач */
+        /* Скрываем на тач-устройствах (телефонах) */
         @media (pointer: coarse) {
             .swiper-button-next, .swiper-button-prev { display: none !important; }
         }
@@ -46,11 +54,13 @@
 
     <div id="product-page" class="page">
         <div onclick="showPage('catalog')" style="margin-bottom:20px; cursor: pointer;">← назад</div>
-        <div class="swiper">
+        
+        <div class="swiper" id="mySwiper">
             <div class="swiper-wrapper" id="p-slides"></div>
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
         </div>
+
         <h1 id="p-title" style="font-size:22px; margin:0;"></h1>
         <div id="p-price" style="font-size:20px; font-weight:bold; margin:10px 0;"></div>
         <div id="p-desc" style="font-size:13px; white-space:pre-line; margin-bottom: 20px;"></div>
@@ -101,10 +111,12 @@
             $('#p-price').text(p.price + ' rub');
             $('#p-desc').text(p.desc);
             $('#final-sum').text((p.price + 400) + ' rub');
+            
+            // Загружаем картинки
             $('#p-slides').html(p.imgs.map(i => `<div class="swiper-slide"><img src="${i}"></div>`).join(''));
             
-            // Инициализация Swiper с кнопками
-            new Swiper('.swiper', { 
+            // Инициализируем Swiper ЗАНОВО при каждом открытии товара
+            const swiper = new Swiper('#mySwiper', { 
                 loop: true,
                 navigation: {
                     nextEl: '.swiper-button-next',
