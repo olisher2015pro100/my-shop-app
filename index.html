@@ -12,79 +12,79 @@
     <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
 
     <style>
-        /* Центровка для ПК */
-        html { background-color: #f5f5f5; display: flex; justify-content: center; min-height: 100vh; }
+        /* Центровка для ПК и увеличение масштаба */
+        html { background-color: #f8f8f8; display: flex; justify-content: center; min-height: 100vh; }
         
         body { 
             font-family: 'Courier New', monospace; background: #fff; margin: 0; 
-            text-transform: lowercase; width: 100vw; max-width: 420px; 
-            min-height: 100vh; box-shadow: 0 0 30px rgba(0,0,0,0.05); 
+            text-transform: lowercase; width: 100vw; max-width: 500px; /* Увеличили ширину */
+            min-height: 100vh; box-shadow: 0 0 40px rgba(0,0,0,0.08); 
             display: flex; flex-direction: column;
         }
 
-        @media screen and (max-width: 450px) {
+        @media screen and (max-width: 500px) {
             body { max-width: 100%; box-shadow: none; }
         }
 
-        .page { display: none; padding: 15px; flex-direction: column; flex-grow: 1; }
+        .page { display: none; padding: 25px; flex-direction: column; flex-grow: 1; box-sizing: border-box; }
         .active { display: flex !important; }
         
-        /* Каталог */
-        .catalog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .catalog-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; }
+        /* Каталог - Крупнее */
+        .catalog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .catalog-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; }
 
-        /* Карточка товара и Слайдер */
-        .swiper { width: 100%; max-height: 350px; border-radius: 10px; margin-bottom: 15px; }
-        .swiper-slide img { width: 100%; height: 350px; object-fit: cover; }
+        /* Карточка товара и Слайдер - Крупнее */
+        .swiper { width: 100%; max-height: 450px; border-radius: 12px; margin-bottom: 20px; }
+        .swiper-slide img { width: 100%; height: 450px; object-fit: cover; }
 
-        /* Размеры */
-        .size-container { display: flex; gap: 8px; margin: 10px 0 20px 0; }
+        /* Твои новые размеры */
+        .size-container { display: flex; gap: 12px; margin: 15px 0 25px 0; }
         .size-btn { 
-            flex: 1; padding: 12px 5px; border: 1px solid #eee; border-radius: 6px; 
-            background: #f9f9f9; cursor: pointer; text-align: center; font-size: 14px;
+            flex: 1; padding: 15px 5px; border: 1px solid #eee; border-radius: 8px; 
+            background: #f9f9f9; cursor: pointer; text-align: center; font-size: 15px; font-family: inherit;
         }
         .size-btn.selected { background: #000; color: #fff; border-color: #000; }
 
         input { 
-            width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #eee; 
-            border-radius: 8px; background: #f7f7f7; font-family: inherit; box-sizing: border-box; 
+            width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #eee; 
+            border-radius: 10px; background: #f7f7f7; font-family: inherit; box-sizing: border-box; font-size: 16px;
         }
 
         .btn-black { 
             width: 100%; background: #000; color: #fff; border: none; 
-            padding: 18px; border-radius: 8px; font-weight: bold; cursor: pointer; 
-            margin-top: auto; /* Прижимает кнопку к низу */
+            padding: 20px; border-radius: 10px; font-weight: bold; cursor: pointer; 
+            font-size: 16px; margin-top: auto;
         }
 
-        /* Текст */
-        h1 { font-size: 18px; margin: 0; }
-        .price { font-size: 18px; font-weight: bold; margin: 5px 0; }
-        .desc { font-size: 12px; opacity: 0.7; white-space: pre-line; margin-bottom: 15px; }
+        /* Тексты крупнее */
+        h1 { font-size: 22px; margin: 0; font-weight: bold; }
+        .price { font-size: 20px; font-weight: bold; margin: 8px 0; }
+        .desc { font-size: 14px; opacity: 0.7; white-space: pre-line; margin-bottom: 20px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
     <div id="catalog" class="page active">
-        <div style="opacity:0.4; margin-bottom:15px; font-size: 12px;">items / drop 01</div>
+        <div style="opacity:0.4; margin-bottom:20px; font-size: 14px;">items / drop 01</div>
         <div class="catalog-grid">
             <div class="catalog-item" onclick="openProduct('zip')" style="cursor: pointer;">
                 <img src="zip-hoode.jpg">
-                <div style="margin-top:8px; font-weight:bold; font-size: 13px;">zip-hoode / "snich"</div>
-                <div style="font-size: 13px;">4500 rub</div>
+                <div style="margin-top:10px; font-weight:bold; font-size: 15px;">zip-hoode / "snich"</div>
+                <div style="font-size: 15px;">4500 rub</div>
             </div>
             <div class="catalog-item" style="opacity: 0.4;">
                 <div style="position:relative;">
                     <img src="t-shirt.jpg" style="filter: grayscale(1);">
-                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-weight:bold; background:#fff; padding:3px 8px; border-radius:4px; font-size: 10px;">soon</div>
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-weight:bold; background:#fff; padding:5px 12px; border-radius:6px; font-size: 12px;">soon</div>
                 </div>
-                <div style="margin-top:8px; font-weight:bold; font-size: 13px;">t-shirt / "v2"</div>
-                <div style="font-size: 13px;">tba</div>
+                <div style="margin-top:10px; font-weight:bold; font-size: 15px;">t-shirt / "v2"</div>
+                <div style="font-size: 15px;">tba</div>
             </div>
         </div>
     </div>
 
     <div id="product-page" class="page">
-        <div onclick="showPage('catalog')" style="margin-bottom:15px; cursor: pointer; opacity: 0.5; font-size: 14px;">← назад</div>
+        <div onclick="showPage('catalog')" style="margin-bottom:20px; cursor: pointer; opacity: 0.5; font-size: 16px;">← назад</div>
         
         <div class="swiper" id="mySwiper">
             <div class="swiper-wrapper" id="p-slides"></div>
@@ -93,12 +93,10 @@
         <h1 id="p-title"></h1>
         <div class="price" id="p-price"></div>
         
-        <div style="margin-top:10px; font-size:11px; font-weight:bold; opacity: 0.5;">size:</div>
+        <div style="margin-top:15px; font-size:13px; font-weight:bold; opacity: 0.6;">size:</div>
         <div class="size-container">
-            <div class="size-btn" onclick="selectSize(this)">S</div>
-            <div class="size-btn" onclick="selectSize(this)">M</div>
-            <div class="size-btn" onclick="selectSize(this)">L</div>
-            <div class="size-btn" onclick="selectSize(this)">XL</div>
+            <div class="size-btn" onclick="selectSize(this)">baby-size</div>
+            <div class="size-btn" onclick="selectSize(this)">big-size</div>
         </div>
 
         <div class="desc" id="p-desc"></div>
@@ -106,13 +104,13 @@
     </div>
 
     <div id="checkout-page" class="page">
-        <div onclick="showPage('product-page')" style="margin-bottom:15px; cursor: pointer; opacity: 0.5; font-size: 14px;">← назад</div>
+        <div onclick="showPage('product-page')" style="margin-bottom:20px; cursor: pointer; opacity: 0.5; font-size: 16px;">← назад</div>
         <form id="order-form" style="display: flex; flex-direction: column; flex-grow: 1;">
             <input type="text" id="f_name" placeholder="имя и фамилия" required>
             <input type="tel" id="f_phone" placeholder="телефон" required>
             <input type="text" id="f_addr" placeholder="город, улица, дом" required>
             <input type="text" id="f_zip" placeholder="индекс" required>
-            <div style="padding:15px; background:#f7f7f7; border-radius:8px; display:flex; justify-content:space-between; margin: 10px 0; font-size: 14px;">
+            <div style="padding:20px; background:#f7f7f7; border-radius:10px; display:flex; justify-content:space-between; margin: 15px 0; font-size: 16px;">
                 <span>итого:</span>
                 <span id="final-sum" style="font-weight:bold;"></span>
             </div>
