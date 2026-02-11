@@ -7,98 +7,75 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
-        body { 
-            font-family: 'Courier New', monospace; background: #fff; margin: 0; 
-            text-transform: lowercase; color: #000;
-        }
-
-        /* КОНТЕЙНЕРЫ ПЕРЕКЛЮЧЕНИЯ */
-        .page { display: none; padding: 20px; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: #fff; margin: 0; text-transform: lowercase; }
+        .page { display: none; padding: 20px; }
         .active { display: block !important; }
 
-        /* ГЛАВНЫЙ ЭКРАН - СЕТКА ТОВАРОВ */
-        .catalog-grid { 
+        /* КАТАЛОГ — ТЕПЕРЬ ОНИ ТОЧНО РЯДОМ */
+        .catalog-list { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 400px)); 
-            gap: 40px; 
-            margin-top: 20px;
+            grid-template-columns: 1fr 1fr; /* Ровно две колонки */
+            gap: 20px; 
+            max-width: 1000px; 
+            margin: 0 auto;
         }
-        .item-card { cursor: pointer; }
-        .item-card img { width: 100%; height: auto; display: block; background: #f0f0f0; }
-        .item-info { margin-top: 10px; font-size: 14px; }
+        @media (max-width: 600px) { .catalog-list { grid-template-columns: 1fr; } }
 
-        /* СТРАНИЦА ТОВАРА - НОРМАЛЬНЫЙ ВИД */
-        .product-content { 
-            display: flex; 
-            gap: 40px; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-        }
-        .gallery-container { flex: 1; }
-        .gallery-container img { width: 100%; height: auto; display: block; }
-        
-        .info-container { flex: 0 0 350px; }
+        .product-card { cursor: pointer; }
+        .product-card img { width: 100%; height: auto; display: block; background: #f0f0f0; min-height: 200px; }
+        .product-card .label { margin-top: 10px; font-size: 14px; }
 
-        /* КНОПКИ И ТЕКСТ */
-        .nav-back { cursor: pointer; opacity: 0.5; margin-bottom: 20px; display: inline-block; }
-        .price-tag { font-size: 20px; margin: 10px 0 30px 0; }
-        
-        .size-selector { margin-bottom: 30px; }
-        .size-list { display: flex; gap: 10px; margin-top: 10px; }
-        .size-option { 
-            flex: 1; padding: 10px; border: 1px solid #000; background: #fff; 
-            cursor: pointer; font-family: inherit; text-align: center;
-        }
-        .size-option.selected { background: #000; color: #fff; }
+        /* СТРАНИЦА ТОВАРА (СТИЛЬ 65/35) */
+        .product-view { display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; }
+        .view-left { flex: 0 0 65%; }
+        .view-left img { width: 100%; display: block; }
+        .view-right { flex: 0 0 30%; padding-top: 20px; }
 
-        .description { font-size: 13px; line-height: 1.6; white-space: pre-line; border-top: 1px solid #eee; padding-top: 20px; }
-        .btn-buy { 
-            width: 100%; background: #000; color: #fff; border: none; 
-            padding: 15px; font-family: inherit; margin-top: 20px; cursor: pointer; 
+        @media (max-width: 900px) {
+            .product-view { flex-direction: column; }
+            .view-left, .view-right { flex: none; width: 100%; }
         }
 
-        /* Мобильная версия */
-        @media (max-width: 768px) {
-            .product-content { flex-direction: column; }
-            .info-container { flex: none; width: 100%; }
-            .catalog-grid { grid-template-columns: 1fr; }
-        }
+        .back-btn { cursor: pointer; opacity: 0.5; margin-bottom: 20px; display: inline-block; }
+        .buy-btn { width: 100%; background: #000; color: #fff; border: none; padding: 15px; margin-top: 20px; cursor: pointer; font-family: inherit; }
+        .size-row { display: flex; gap: 10px; margin: 10px 0 20px; }
+        .size-box { flex: 1; border: 1px solid #000; padding: 10px; text-align: center; cursor: pointer; }
+        .size-box.selected { background: #000; color: #fff; }
+        .desc { font-size: 12px; line-height: 1.5; white-space: pre-line; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div id="main-page" class="page active">
-        <div style="opacity: 0.5; font-size: 12px;">mister snich / drop 01</div>
-        <div class="catalog-grid">
-            <div class="item-card" onclick="openItem('zip')">
-                <img src="zip-hoode.jpg">
-                <div class="item-info">zip-hoode / "snich" — 4500 rub</div>
+    <div id="catalog-page" class="page active">
+        <div style="margin-bottom: 20px; opacity: 0.5;">mister snich / drop 01</div>
+        <div class="catalog-list">
+            <div class="product-card" onclick="openProduct('zip')">
+                <img src="zip-hoode.jpg" alt="zip-hoode">
+                <div class="label">zip-hoode / "snich" — 4500 rub</div>
             </div>
-            <div class="item-card" onclick="openItem('tshirt')">
-                <img src="t-shirt-v2.jpg"> <div class="item-info">t-shirt / "v2" — tba</div>
+            <div class="product-card" onclick="openProduct('tshirt')">
+                <img src="t-shirt-v2.jpg" alt="t-shirt">
+                <div class="label">t-shirt / "v2" — tba</div>
             </div>
         </div>
     </div>
 
     <div id="item-page" class="page">
-        <div class="nav-back" onclick="goTo('main-page')">← назад</div>
-        <div class="product-content">
-            <div class="gallery-container" id="g-list"></div>
-            
-            <div class="info-container">
-                <h1 id="g-title" style="font-size: 24px; margin: 0;"></h1>
-                <div class="price-tag" id="g-price"></div>
-
-                <div class="size-selector">
-                    <div>размер:</div>
-                    <div class="size-list">
-                        <button class="size-option" onclick="pickSize(this)">baby-size</button>
-                        <button class="size-option" onclick="pickSize(this)">big-size</button>
-                    </div>
+        <div class="back-btn" onclick="showPage('catalog-page')">← назад</div>
+        <div class="product-view">
+            <div class="view-left" id="item-img"></div>
+            <div class="view-right">
+                <h1 id="item-title" style="font-size: 22px; margin: 0;"></h1>
+                <div id="item-price" style="font-size: 18px; margin: 10px 0 20px;"></div>
+                
+                <div style="font-size: 12px; opacity: 0.5;">размер:</div>
+                <div class="size-row">
+                    <div class="size-box" onclick="selectSize(this)">baby-size</div>
+                    <div class="size-box" onclick="selectSize(this)">big-size</div>
                 </div>
 
-                <div class="description" id="g-desc"></div>
-                <button class="btn-buy" onclick="tg.sendData('order_click')">в корзину</button>
+                <div class="desc" id="item-desc"></div>
+                <button class="buy-btn" onclick="alert('корзина скоро!')">в корзину</button>
             </div>
         </div>
     </div>
@@ -107,39 +84,39 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const data = {
+        const db = {
             zip: {
-                name: 'zip-hoode / "snich"',
+                title: 'zip-hoode / "snich"',
                 price: '4500 rub',
-                images: ['zip-hoode.jpg'],
-                text: `new drop\nоверсайз крой\nткань: футер 3-х нитка\nbaby size (m-l) / big size (xl+)\n400 rub shipping`
+                img: 'zip-hoode.jpg',
+                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка\n400 rub shipping`
             },
             tshirt: {
-                name: 't-shirt / "v2"',
+                title: 't-shirt / "v2"',
                 price: 'tba',
-                images: ['t-shirt-v2.jpg'], 
-                text: `coming soon\nnew drop / collection 01`
+                img: 't-shirt-v2.jpg',
+                desc: `coming soon\nnew drop / collection 01\nstay tuned.`
             }
         };
 
-        function goTo(id) {
+        function showPage(id) {
             $('.page').removeClass('active');
             $('#' + id).addClass('active');
             window.scrollTo(0,0);
         }
 
-        function openItem(id) {
-            const item = data[id];
-            $('#g-title').text(item.name);
-            $('#g-price').text(item.price);
-            $('#g-desc').text(item.text);
-            $('#g-list').html(item.images.map(i => `<img src="${i}">`).join(''));
-            $('.size-option').removeClass('selected');
-            goTo('item-page');
+        function openProduct(id) {
+            const p = db[id];
+            $('#item-title').text(p.title);
+            $('#item-price').text(p.price);
+            $('#item-desc').text(p.desc);
+            $('#item-img').html(`<img src="${p.img}">`);
+            $('.size-box').removeClass('selected');
+            showPage('item-page');
         }
 
-        function pickSize(el) {
-            $('.size-option').removeClass('selected');
+        function selectSize(el) {
+            $('.size-box').removeClass('selected');
             $(el).addClass('selected');
         }
     </script>
