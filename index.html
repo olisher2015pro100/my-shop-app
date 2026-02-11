@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #fff; text-align: center; padding: 20px; }
+        .item { border: 1px solid #ccc; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+        button { background: #0088cc; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="item">
+        <h3>zip-hoode</h3>
+        <button onclick="order('zip-hoode')">выбрать</button>
+    </div>
+    <div class="item">
+        <h3>t-shirt</h3>
+        <button onclick="order('t-shirt')">выбрать</button>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Развернуть на весь экран
+
+        function order(item) {
+            // Передаем данные обратно в бота
+            tg.sendData(item);
+            tg.close();
+        }
+    </script>
+</body>
+</html>
