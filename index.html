@@ -12,63 +12,63 @@
     <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
 
     <style>
-        :root { --bg: #ffffff; --text: #000000; --gray: #f7f7f7; }
-        body { font-family: 'Courier New', monospace; background: var(--bg); color: var(--text); margin: 0; text-transform: lowercase; overflow-x: hidden; }
-        
-        /* Исправляем курсор и кликабельность */
+        body { font-family: 'Courier New', monospace; background: #fff; margin: 0; text-transform: lowercase; }
         .page { display: none; padding: 20px; }
-        .page.active { display: block; }
+        .active { display: block !important; }
         
-        .catalog-item, .btn-black, .back-btn { cursor: pointer !important; }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #eee; border-radius: 8px; background: #f7f7f7; font-family: inherit; box-sizing: border-box; }
+        .btn-black { width: 100%; background: #000; color: #fff; border: none; padding: 18px; border-radius: 8px; font-weight: bold; cursor: pointer; -webkit-appearance: none; }
         
-        .catalog-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; background: var(--gray); }
-        .swiper { width: 100%; height: auto; aspect-ratio: 1/1; border-radius: 12px; margin-bottom: 20px; }
+        .catalog-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; }
+        .swiper { width: 100%; aspect-ratio: 1/1; border-radius: 12px; margin-bottom: 20px; position: relative; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Стиль стрелок для ПК */
+        .swiper-button-next, .swiper-button-prev { color: #000 !important; transform: scale(0.7); }
+        .swiper-button-next:after, .swiper-button-prev:after { font-size: 24px !important; font-weight: bold; }
         
-        input { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #eee; font-family: inherit; box-sizing: border-box; outline: none; border-radius: 8px; background: var(--gray); font-size: 14px; }
-        
-        .btn-black { width: 100%; background: #000; color: #fff; border: none; padding: 18px; font-family: inherit; font-weight: bold; font-size: 14px; border-radius: 8px; -webkit-appearance: none; }
-        
-        .suggestions-suggestions { font-family: 'Courier New', monospace !important; text-transform: lowercase; }
+        /* Скрываем стрелки на мобилках, где есть тач */
+        @media (pointer: coarse) {
+            .swiper-button-next, .swiper-button-prev { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
     <div id="catalog" class="page active">
         <div style="opacity:0.5; margin-bottom:20px;">items / drop 01</div>
-        <div class="catalog-list">
-            <div class="catalog-item" onclick="openProduct('zip')">
-                <img src="zip-hoode.jpg">
-                <div style="margin-top:12px; font-weight:bold;">zip-hoode / "snich"</div>
-                <div style="opacity: 0.6;">4500 rub</div>
-            </div>
+        <div class="catalog-item" onclick="openProduct('zip')" style="cursor: pointer;">
+            <img src="zip-hoode.jpg">
+            <div style="margin-top:12px; font-weight:bold;">zip-hoode / "snich"</div>
+            <div>4500 rub</div>
         </div>
     </div>
 
     <div id="product-page" class="page">
-        <div class="back-btn" onclick="showPage('catalog')" style="margin-bottom:20px;">← назад</div>
-        <div class="swiper"><div class="swiper-wrapper" id="p-slides"></div></div>
-        <div class="product-info">
-            <h1 id="p-title" style="font-size:22px; margin:0;"></h1>
-            <div id="p-price" style="font-size:20px; font-weight:bold; margin:10px 0;"></div>
-            <div id="p-desc" style="font-size:13px; line-height:1.6; white-space:pre-line; margin-bottom: 20px;"></div>
-            <button class="btn-black" onclick="showPage('checkout-page')">купить</button>
+        <div onclick="showPage('catalog')" style="margin-bottom:20px; cursor: pointer;">← назад</div>
+        <div class="swiper">
+            <div class="swiper-wrapper" id="p-slides"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
         </div>
+        <h1 id="p-title" style="font-size:22px; margin:0;"></h1>
+        <div id="p-price" style="font-size:20px; font-weight:bold; margin:10px 0;"></div>
+        <div id="p-desc" style="font-size:13px; white-space:pre-line; margin-bottom: 20px;"></div>
+        <button class="btn-black" onclick="showPage('checkout-page')">купить</button>
     </div>
 
     <div id="checkout-page" class="page">
-        <div class="back-btn" onclick="showPage('product-page')" style="margin-bottom:20px;">← назад</div>
-        <div style="font-size:20px; font-weight:bold; margin-bottom:20px;">доставка</div>
+        <div onclick="showPage('product-page')" style="margin-bottom:20px; cursor: pointer;">← назад</div>
         <form id="order-form">
             <input type="text" id="f_name" placeholder="имя и фамилия" required>
             <input type="tel" id="f_phone" placeholder="телефон" required>
             <input type="text" id="f_addr" placeholder="город, улица, дом" required>
             <input type="text" id="f_zip" placeholder="индекс" required>
-            <div style="background:var(--gray); padding:15px; border-radius:8px; display:flex; justify-content:space-between; margin: 10px 0;">
+            <div style="padding:15px; background:#f7f7f7; border-radius:8px; display:flex; justify-content:space-between; margin: 10px 0;">
                 <span>итого:</span>
                 <span id="final-sum" style="font-weight:bold;"></span>
             </div>
-            <button type="submit" class="btn-black">оплатить</button>
+            <button type="submit" class="btn-black">перейти к оплате</button>
         </form>
     </div>
 
@@ -79,26 +79,17 @@
 
         const dToken = "a3e3730b70eb4d2c079c26af9a68a870a9658d62";
 
-        // DaData Подсказки
         $("#f_name").suggestions({ token: dToken, type: "NAME" });
         $("#f_addr").suggestions({
-            token: dToken,
-            type: "ADDRESS",
-            onSelect: function(s) { 
-                if(s.data.postal_code) $('#f_zip').val(s.data.postal_code); 
-            }
+            token: dToken, type: "ADDRESS",
+            onSelect: function(s) { if(s.data.postal_code) $('#f_zip').val(s.data.postal_code); }
         });
 
         const products = {
-            zip: { 
-                title: 'zip-hoode / "snich"', 
-                price: 4500, 
-                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'], 
-                desc: "drop 01\noversize fit\n400 rub shipping" 
-            }
+            zip: { title: 'zip-hoode / "snich"', price: 4500, imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'], desc: "drop 01\noversize\n400 rub ship" }
         };
 
-        function showPage(id) { 
+        function showPage(id) {
             $('.page').removeClass('active');
             $('#' + id).addClass('active');
             window.scrollTo(0,0);
@@ -110,18 +101,23 @@
             $('#p-price').text(p.price + ' rub');
             $('#p-desc').text(p.desc);
             $('#final-sum').text((p.price + 400) + ' rub');
+            $('#p-slides').html(p.imgs.map(i => `<div class="swiper-slide"><img src="${i}"></div>`).join(''));
             
-            let slides = p.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join('');
-            $('#p-slides').html(slides);
+            // Инициализация Swiper с кнопками
+            new Swiper('.swiper', { 
+                loop: true,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
             
-            new Swiper('.swiper', { loop: true });
             showPage('product-page');
         }
 
-        // Финальная функция отправки
         $('#order-form').on('submit', function(e) {
             e.preventDefault();
-            const result = {
+            const data = {
                 action: 'create_payment',
                 customer: $('#f_name').val(),
                 phone: $('#f_phone').val(),
@@ -130,7 +126,7 @@
                 item: $('#p-title').text(),
                 total: $('#final-sum').text().replace(/[^0-9]/g, '')
             };
-            tg.sendData(JSON.stringify(result));
+            tg.sendData(JSON.stringify(data));
             tg.close();
         });
     </script>
