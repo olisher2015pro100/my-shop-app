@@ -8,67 +8,49 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css" rel="stylesheet" />
     <style>
-        :root { 
-            --bg: #000000; 
-            --card-bg: #0a0a0a;
-            --text: #ffffff;
-            --accent: #ffffff;
-            --muted: #888888;
-        }
-
+        :root { --bg: #000; --text: #fff; --accent: #fff; --muted: #888; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg); color: var(--text);
-            margin: 0; padding: 0; overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); 
+            margin: 0; padding: 0; overflow-x: hidden; text-transform: lowercase;
         }
-
         header { 
             padding: 20px; text-align: center; border-bottom: 1px solid #111;
             position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100;
         }
-        .logo { font-size: 14px; letter-spacing: 3px; text-transform: uppercase; font-weight: 900; }
+        .logo { font-size: 14px; letter-spacing: 3px; font-weight: 900; }
 
+        /* КАТАЛОГ */
         .catalog { padding: 15px; display: flex; flex-direction: column; gap: 25px; }
-        .product-card { background: var(--card-bg); border-radius: 25px; overflow: hidden; border: 1px solid #1a1a1a; }
+        .product-card { background: #0a0a0a; border-radius: 25px; overflow: hidden; border: 1px solid #1a1a1a; }
         .product-card img { width: 100%; display: block; aspect-ratio: 3/4; object-fit: cover; }
         .product-details { padding: 20px; }
-        .product-name { font-size: 18px; font-weight: 700; }
 
         .page { display: none; min-height: 100vh; background: var(--bg); padding-bottom: 40px; }
         .page.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .back-btn { padding: 20px; color: var(--muted); font-size: 14px; cursor: pointer; }
-        .swiper { width: 100%; aspect-ratio: 3/4; }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
-
         .info-block { padding: 25px; }
-        /* ЖИРНОЕ ОПИСАНИЕ */
+        /* МАКСИМАЛЬНО ЖИРНОЕ ОПИСАНИЕ */
         .info-desc { 
-            font-size: 15px; 
-            line-height: 1.6; 
-            font-weight: 700; 
-            color: #fff; 
-            margin-bottom: 30px; 
-            white-space: pre-line; 
-            background: #111;
-            padding: 15px;
-            border-radius: 12px;
+            font-size: 16px; line-height: 1.6; font-weight: 900; 
+            color: #fff; margin-bottom: 30px; white-space: pre-line; 
+            background: #111; padding: 20px; border-radius: 15px; border: 1px solid #222;
         }
 
         .size-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
         .size-item { padding: 15px; border: 1px solid #333; border-radius: 12px; text-align: center; font-weight: 600; }
         .size-item.selected { background: var(--accent); color: #000; }
 
-        .main-button { background: var(--accent); color: #000; border: none; padding: 20px; border-radius: 18px; width: 100%; font-size: 16px; font-weight: 800; text-transform: uppercase; }
+        .main-button { 
+            background: var(--accent); color: #000; border: none; padding: 20px; 
+            border-radius: 18px; width: 100%; font-size: 16px; font-weight: 800; text-transform: uppercase; 
+        }
 
-        /* DADATA DARK THEME */
+        input { 
+            width: 100%; background: #111; border: 1px solid #222; padding: 18px; 
+            border-radius: 15px; color: #fff; margin-bottom: 12px; box-sizing: border-box; font-family: inherit;
+        }
         .suggestions-suggestions { background: #111 !important; color: #fff !important; border: 1px solid #333 !important; }
-        .suggestions-suggestion:hover { background: #222 !important; }
-        .suggestions-promo { display: none !important; }
-
-        input { width: 100%; background: #111; border: 1px solid #222; padding: 18px; border-radius: 15px; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -80,15 +62,22 @@
             <div class="product-card" onclick="openProduct('zip')">
                 <img src="zip-hoode.jpg">
                 <div class="product-details">
-                    <div class="product-name">zip-hoode / "snich"</div>
+                    <div style="font-weight:700">zip-hoode / "snich"</div>
                     <div style="color:var(--muted)">4500 rub</div>
+                </div>
+            </div>
+            <div class="product-card" onclick="openProduct('tshirt')">
+                <div style="aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; background:#111; font-size:24px; font-weight:900;">T-SHIRT COMING</div>
+                <div class="product-details">
+                    <div style="font-weight:700">t-shirt / "snich"</div>
+                    <div style="color:var(--muted)">???? rub</div>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="product" class="page">
-        <div class="back-btn" onclick="showPage('home')">← НАЗАД</div>
+        <div style="padding:20px; color:var(--muted)" onclick="showPage('home')">← назад</div>
         <div class="swiper mySwiper"><div class="swiper-wrapper" id="slides"></div></div>
         <div class="info-block">
             <div style="font-size: 24px; font-weight: 800; margin-bottom: 10px;" id="p-title"></div>
@@ -98,19 +87,21 @@
                 <div class="size-item" onclick="selectSize(this)">baby-size</div>
                 <div class="size-item" onclick="selectSize(this)">big-size</div>
             </div>
-            <button class="main-button" onclick="showPage('checkout')">КУПИТЬ</button>
+            <button class="main-button" onclick="showPage('checkout')">купить</button>
         </div>
     </div>
 
     <div id="checkout" class="page">
-        <div class="back-btn" onclick="showPage('product')">← НАЗАД</div>
+        <div style="padding:20px; color:var(--muted)" onclick="showPage('product')">← назад</div>
         <div class="info-block">
-            <div style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">ДОСТАВКА</div>
-            <input type="text" id="name" placeholder="ФИО">
-            <input type="text" id="address" placeholder="ГОРОД И АДРЕС">
-            <input type="text" id="postal" placeholder="ПОЧТОВЫЙ ИНДЕКС" readonly>
-            <input type="text" id="tg_user" placeholder="ДЛЯ СВЯЗИ С ПРОДАВЦОМ НАПИШИТЕ КОНТАКТЫ (@)">
-            <button class="main-button" onclick="confirmOrder()">ОФОРМИТЬ</button>
+            <div style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">доставка</div>
+            <input type="text" id="name" placeholder="фио">
+            <input type="text" id="address" placeholder="город и адрес">
+            <input type="text" id="postal" placeholder="почтовый индекс" readonly>
+            <input type="tel" id="phone" placeholder="номер телефона">
+            <input type="email" id="email" placeholder="электронная почта">
+            <input type="text" id="tg_user" placeholder="для связи с продавцом напишите контакты (@)">
+            <button class="main-button" style="margin-top:10px" onclick="confirmOrder()">подтвердить</button>
         </div>
     </div>
 
@@ -120,7 +111,6 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
         let selectedSize = null;
         let currentItem = null;
 
@@ -128,23 +118,24 @@
             zip: {
                 title: 'zip-hoode / "snich"',
                 price: '4500 rub',
-                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg'],
+                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'],
                 desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70'
+            },
+            tshirt: {
+                title: 't-shirt / "snich"',
+                price: 'soon',
+                imgs: ['zip-hoode.jpg'], // Замени на фото тишки когда будет
+                desc: 'coming soon...'
             }
         };
 
-        // ВОЗВРАТ DADATA
         $("#address").suggestions({
             token: "1ed0eebc35156fe4fe197c5dd676354f40bfd073",
             type: "ADDRESS",
             onSelect: function(s) { if(s.data.postal_code) $("#postal").val(s.data.postal_code); }
         });
 
-        function showPage(id) {
-            $(".page").removeClass("active");
-            $("#" + id).addClass("active");
-            window.scrollTo(0,0);
-        }
+        function showPage(id) { $(".page").removeClass("active"); $("#" + id).addClass("active"); window.scrollTo(0,0); }
 
         function openProduct(id) {
             currentItem = data[id];
@@ -156,25 +147,28 @@
             showPage('product');
         }
 
-        function selectSize(el) {
-            $(".size-item").removeClass("selected");
-            $(el).addClass("selected");
-            selectedSize = el.innerText;
-        }
+        function selectSize(el) { $(".size-item").removeClass("selected"); $(el).addClass("selected"); selectedSize = el.innerText; }
 
         function confirmOrder() {
-            const name = $("#name").val();
-            const addr = $("#address").val();
-            const contact = $("#tg_user").val();
-            if(!name || !addr || !contact) return alert('ЗАПОЛНИ ДАННЫЕ!');
+            const fields = {
+                name: $("#name").val(),
+                addr: $("#address").val(),
+                phone: $("#phone").val(),
+                email: $("#email").val(),
+                contact: $("#tg_user").val()
+            };
+
+            if(!fields.name || !fields.addr || !fields.contact || !fields.phone) return alert('заполни основные поля!');
 
             const order = {
-                item: currentItem.title + " [" + selectedSize + "]",
+                item: currentItem.title + " [" + (selectedSize || 'no size') + "]",
                 price: currentItem.price,
-                customer: name,
-                address: addr,
+                customer: fields.name,
+                address: fields.addr,
                 zip: $("#postal").val(),
-                contact: contact
+                phone: fields.phone,
+                email: fields.email,
+                contact: fields.contact
             };
             tg.sendData(JSON.stringify(order));
             tg.close();
