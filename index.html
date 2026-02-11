@@ -6,103 +6,129 @@
     <title>mister snich</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
-        body { font-family: 'Courier New', monospace; background: #fff; margin: 0; text-transform: lowercase; color: #000; overflow-x: hidden; }
-        .page { display: none; padding: 20px; box-sizing: border-box; }
+        :root { --main-font: 'Courier New', monospace; }
+        body { font-family: var(--main-font); background: #fff; margin: 0; text-transform: lowercase; color: #000; overflow-x: hidden; font-weight: 500; }
+        .page { display: none; padding: 20px; box-sizing: border-box; animation: fadeIn 0.3s ease; }
         .active { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* HEADER & CART ICON */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .cart-status { cursor: pointer; border-bottom: 1px solid #000; padding-bottom: 2px; transition: 0.3s; }
+        .cart-status:hover { opacity: 0.6; }
 
         /* КАТАЛОГ */
-        .catalog-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1000px; margin: 0 auto; }
+        .catalog-list { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1000px; margin: 0 auto; }
         @media (max-width: 600px) { .catalog-list { grid-template-columns: 1fr; } }
         
-        .product-card { cursor: pointer; transition: 0.3s; }
-        .product-card:hover { opacity: 0.7; }
-        .img-wrap { width: 100%; aspect-ratio: 3/4; background: #f2f2f2; overflow: hidden; }
+        .product-card { cursor: pointer; transition: 0.4s; }
+        .product-card:hover { transform: translateY(-5px); }
+        .img-wrap { width: 100%; aspect-ratio: 3/4; background: #f7f7f7; overflow: hidden; border-radius: 2px; }
         .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
         /* СЛАЙДЕР */
-        .swiper { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; --swiper-navigation-color: #000; --swiper-pagination-color: #000; }
+        .swiper { width: 100%; aspect-ratio: 3/4; background: #fafafa; --swiper-navigation-color: #000; --swiper-pagination-color: #000; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
         /* СТРАНИЦА ТОВАРА */
-        .product-view { display: flex; gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .view-left { flex: 0 0 60%; min-width: 0; position: relative; } 
-        .view-right { flex: 1; }
+        .product-view { display: flex; gap: 50px; max-width: 1200px; margin: 0 auto; }
+        .view-left { flex: 0 0 55%; min-width: 0; position: relative; } 
+        .view-right { flex: 1; display: flex; flex-direction: column; }
 
         @media (max-width: 900px) {
-            .product-view { flex-direction: column; gap: 20px; }
+            .product-view { flex-direction: column; gap: 30px; }
             .view-left { width: 100%; }
         }
 
-        /* КНОПКИ */
-        .back-btn { cursor: pointer; opacity: 0.5; margin-bottom: 20px; display: inline-block; transition: 0.3s; border: none; background: none; font-family: inherit; font-size: 14px; padding: 0; }
-        .back-btn:hover { opacity: 1; transform: translateX(-3px); }
+        /* ТЕКСТ И КНОПКИ */
+        h1 { font-size: 28px; margin: 0; font-weight: 600; letter-spacing: -1px; }
+        .price { font-size: 20px; margin: 15px 0 40px; font-weight: 600; }
+        
+        .back-btn { cursor: pointer; opacity: 0.4; margin-bottom: 25px; display: inline-block; transition: 0.3s; border: none; background: none; font-family: inherit; font-size: 14px; padding: 0; }
+        .back-btn:hover { opacity: 1; transform: translateX(-5px); }
 
-        .size-row { display: flex; gap: 10px; margin: 15px 0 25px; }
-        .size-box { flex: 1; border: 1px solid #000; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .size-row { display: flex; gap: 12px; margin: 15px 0 30px; }
+        .size-box { flex: 1; border: 1.5px solid #000; padding: 18px; text-align: center; cursor: pointer; transition: 0.2s; font-weight: 600; }
         .size-box:hover { background: #f5f5f5; }
         .size-box.selected { background: #000; color: #fff; }
 
-        .buy-btn { width: 100%; background: #000; color: #fff; border: none; padding: 20px; cursor: pointer; font-family: inherit; font-size: 16px; transition: 0.3s; }
-        .buy-btn:hover { opacity: 0.7; }
+        .buy-btn { width: 100%; background: #000; color: #fff; border: none; padding: 22px; cursor: pointer; font-family: inherit; font-size: 16px; font-weight: 600; transition: 0.3s; margin-top: auto; }
+        .buy-btn:hover { background: #333; }
 
-        .desc { font-size: 13px; line-height: 1.6; white-space: pre-line; border-top: 1px solid #eee; margin-top: 20px; padding-top: 20px; }
+        .desc { font-size: 14px; line-height: 1.7; white-space: pre-line; border-top: 1px solid #eee; margin-top: 30px; padding-top: 30px; color: #444; }
+
+        /* КОРЗИНА МОДАЛКА */
+        #cart-modal { display: none; position: fixed; top: 0; right: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.98); z-index: 1000; padding: 40px; box-sizing: border-box; }
+        .close-cart { cursor: pointer; float: right; font-size: 20px; }
     </style>
 </head>
 <body>
 
     <div id="catalog-page" class="page active">
-        <div style="margin-bottom: 30px; opacity: 0.4; font-size: 12px;">mister snich / drop 01</div>
+        <header>
+            <div style="opacity: 0.4; font-size: 12px;">mister snich / drop 01</div>
+            <div class="cart-status" onclick="toggleCart(true)">cart (<span id="cart-count">0</span>)</div>
+        </header>
+        
         <div class="catalog-list">
             <div class="product-card" onclick="openProduct('zip')">
                 <div class="img-wrap"><img src="zip-hoode.jpg"></div>
-                <div style="margin-top:10px;">zip-hoode / "snich"<br>4500 rub</div>
+                <div style="margin-top:15px; font-weight: 600;">zip-hoode / "snich"<br>4500 rub</div>
             </div>
             <div class="product-card">
                 <div class="img-wrap" style="display: flex; align-items: center; justify-content: center; opacity: 0.2;">soon</div>
-                <div style="margin-top:10px;">t-shirt / "v2"<br>tba</div>
+                <div style="margin-top:15px;">t-shirt / "v2"<br>tba</div>
             </div>
         </div>
     </div>
 
     <div id="item-page" class="page">
-        <button class="back-btn" onclick="showPage('catalog-page')">← назад</button>
+        <button class="back-btn" onclick="showPage('catalog-page')">← назад к списку</button>
         <div class="product-view">
             <div class="view-left">
                 <div class="swiper mySwiper">
-                    <div class="swiper-wrapper" id="slider-wrapper">
-                        </div>
+                    <div class="swiper-wrapper" id="slider-wrapper"></div>
                     <div class="swiper-button-next"></div>
                     <div class="swiper-button-prev"></div>
                     <div class="swiper-pagination"></div>
                 </div>
             </div>
             <div class="view-right">
-                <h1 id="item-title" style="font-size: 24px; margin: 0; font-weight: normal;"></h1>
-                <div id="item-price" style="font-size: 18px; margin: 10px 0 30px;"></div>
+                <h1 id="item-title"></h1>
+                <div id="item-price" class="price"></div>
                 
-                <div style="font-size: 11px; opacity: 0.5; margin-bottom: 10px;">выберите размер:</div>
+                <div style="font-size: 11px; opacity: 0.5; margin-bottom: 10px;">size:</div>
                 <div class="size-row">
                     <div class="size-box" onclick="selectSize(this)">baby-size</div>
                     <div class="size-box" onclick="selectSize(this)">big-size</div>
                 </div>
 
                 <div class="desc" id="item-desc"></div>
-                <button class="buy-btn" onclick="alert('корзина в разработке')">в корзину</button>
+                <button class="buy-btn" id="add-to-cart">add to cart</button>
             </div>
         </div>
+    </div>
+
+    <div id="cart-modal">
+        <div class="close-cart" onclick="toggleCart(false)">close ✕</div>
+        <h2>your cart</h2>
+        <div id="cart-items" style="margin-top: 50px;">ваша корзина пуста</div>
+        <button class="buy-btn" style="position: absolute; bottom: 40px; left: 40px; width: calc(100% - 80px);" onclick="alert('оформление будет тут')">checkout</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let mySwiper = null;
+        let cart = [];
+        let currentItem = null;
 
         const db = {
             zip: {
+                id: 'zip',
                 title: 'zip-hoode / "snich"',
                 price: '4500 rub',
-                // ПРОВЕРЯЙ: список твоих файлов
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
-                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70\n\n400 rub shipping`
+                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка\n400 rub shipping`
             }
         };
 
@@ -112,42 +138,61 @@
             window.scrollTo(0,0);
         }
 
+        function toggleCart(show) {
+            document.getElementById('cart-modal').style.display = show ? 'block' : 'none';
+        }
+
         function openProduct(id) {
             const data = db[id];
-            if(!data) return;
-
+            currentItem = data;
             document.getElementById('item-title').innerText = data.title;
             document.getElementById('item-price').innerText = data.price;
             document.getElementById('item-desc').innerText = data.desc;
 
-            // Генерируем слайды
             const wrapper = document.getElementById('slider-wrapper');
             wrapper.innerHTML = data.imgs.map(src => `<div class="swiper-slide"><img src="${src}"></div>`).join('');
 
-            // Убиваем старый слайдер и создаем новый
             if (mySwiper) mySwiper.destroy(true, true);
-            
             mySwiper = new Swiper(".mySwiper", {
-                direction: "horizontal",
-                loop: false,
-                navigation: {
-                    nextEl: ".swiper-button-next",
-                    prevEl: ".swiper-button-prev",
-                },
-                pagination: {
-                    el: ".swiper-pagination",
-                    clickable: true
-                },
+                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                pagination: { el: ".swiper-pagination", clickable: true },
                 observer: true,
                 observeParents: true
             });
 
+            document.querySelectorAll('.size-box').forEach(b => b.classList.remove('selected'));
             showPage('item-page');
         }
 
         function selectSize(el) {
             document.querySelectorAll('.size-box').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
+        }
+
+        document.getElementById('add-to-cart').onclick = function() {
+            const selectedSize = document.querySelector('.size-box.selected');
+            if (!selectedSize) {
+                alert('выберите размер');
+                return;
+            }
+            cart.push({ ...currentItem, size: selectedSize.innerText });
+            updateCartUI();
+            toggleCart(true);
+        };
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const itemsDiv = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                itemsDiv.innerHTML = "ваша корзина пуста";
+            } else {
+                itemsDiv.innerHTML = cart.map((item, index) => `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <div>${item.title} (${item.size})</div>
+                        <div>${item.price}</div>
+                    </div>
+                `).join('');
+            }
         }
     </script>
 </body>
