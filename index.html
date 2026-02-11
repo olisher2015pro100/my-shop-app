@@ -70,3 +70,90 @@
                 <div style="margin-top:10px;">t-shirt / "v2"<br>tba</div>
             </div>
         </div>
+    </div>
+
+    <div id="item-page" class="page">
+        <div class="back-btn" onclick="showPage('catalog-page')">← назад</div>
+        <div class="product-view">
+            <div class="view-left">
+                <div class="swiper mySwiper">
+                    <div class="swiper-wrapper" id="slider-wrapper"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+            <div class="view-right">
+                <h1 id="item-title" style="font-size: 24px; margin: 0; font-weight: normal;"></h1>
+                <div id="item-price" style="font-size: 18px; margin: 10px 0 30px;"></div>
+                
+                <div style="font-size: 12px; opacity: 0.5;">размер:</div>
+                <div class="size-row">
+                    <div class="size-box" onclick="selectSize(this)">baby-size</div>
+                    <div class="size-box" onclick="selectSize(this)">big-size</div>
+                </div>
+
+                <div class="desc" id="item-desc"></div>
+                <button class="buy-btn" onclick="alert('корзина скоро')">в корзину</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let swiperInstance = null;
+
+        const db = {
+            zip: {
+                title: 'zip-hoode / "snich"',
+                price: '4500 rub',
+                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'], 
+                desc: `new drop\nоверсайз крой\nткань:футер 3-х нитка /кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70`
+            },
+            tshirt: {
+                title: 't-shirt / "v2"',
+                price: 'tba',
+                imgs: [], 
+                desc: `soon\nnew drop / collection 01`
+            }
+        };
+
+        function showPage(id) {
+            $('.page').removeClass('active');
+            $('#' + id).addClass('active');
+            window.scrollTo(0,0);
+        }
+
+        function openProduct(id) {
+            const p = db[id];
+            $('#item-title').text(p.title);
+            $('#item-price').text(p.price);
+            $('#item-desc').text(p.desc);
+            
+            let slides = '';
+            if(p.imgs.length > 0) {
+                p.imgs.forEach(src => {
+                    slides += `<div class="swiper-slide"><img src="${src}"></div>`;
+                });
+            } else {
+                slides = `<div class="swiper-slide"><div class="soon-overlay">soon</div></div>`;
+            }
+            $('#slider-wrapper').html(slides);
+
+            if (swiperInstance) swiperInstance.destroy();
+            
+            // ТЕПЕРЬ ЛИСТАЕТСЯ ГОРИЗОНТАЛЬНО
+            swiperInstance = new Swiper(".mySwiper", {
+                direction: 'horizontal', 
+                loop: false,
+                pagination: { el: ".swiper-pagination", clickable: true },
+            });
+
+            $('.size-box').removeClass('selected');
+            showPage('item-page');
+        }
+
+        function selectSize(el) {
+            $('.size-box').removeClass('selected');
+            $(el).addClass('selected');
+        }
+    </script>
+</body>
+</html>
