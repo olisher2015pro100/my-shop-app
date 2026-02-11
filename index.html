@@ -5,106 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Основные переменные для шрифта и цветов */
         body {
-            font-family: 'Courier New', Courier, monospace; /* Тот самый стиль */
+            font-family: 'Courier New', Courier, monospace;
             background-color: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-transform: lowercase; /* Все буквы маленькие для стиля */
+            text-transform: lowercase;
         }
 
-        .nav-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
+        .header {
+            margin-bottom: 30px;
             font-size: 14px;
-        }
-
-        .nav-item {
-            padding: 5px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .active {
-            background-color: rgba(128, 128, 128, 0.2); /* Серая плашка как на скрине */
+            opacity: 0.6;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+            padding-bottom: 10px;
         }
 
         .product-list {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 50px;
         }
 
         .product-card {
-            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
-            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .image-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
+        .product-img {
+            width: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+            background-color: rgba(128, 128, 128, 0.05);
+        }
+
+        /* Заглушка для "Soon" */
+        .soon-placeholder {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: rgba(128, 128, 128, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            letter-spacing: 2px;
+            opacity: 0.5;
+        }
+
+        .product-info {
+            padding-left: 10px;
+            border-left: 1px solid var(--tg-theme-text-color, #000);
+        }
+
         .product-title {
             font-size: 18px;
-            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
 
         .product-price {
             font-size: 14px;
-            opacity: 0.7;
+            opacity: 0.8;
+            margin-bottom: 15px;
         }
 
         .select-btn {
             align-self: flex-start;
-            background-color: var(--tg-theme-button-color, #000);
-            color: var(--tg-theme-button-text-color, #fff);
+            background-color: var(--tg-theme-text-color, #000);
+            color: var(--tg-theme-bg-color, #fff);
             border: none;
             padding: 8px 20px;
             border-radius: 20px;
             font-family: inherit;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
+            transition: 0.2s;
         }
 
-        /* Убираем синий цвет кнопок, если хотим монохром */
-        .select-btn {
-            background-color: var(--tg-theme-text-color);
-            color: var(--tg-theme-bg-color);
+        .select-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
-    <div class="nav-bar">
-        <div class="nav-item active">каталог</div>
-        <div class="nav-item">sale</div>
-        <div class="nav-item">коллекции</div>
-        <div class="nav-item">о нас</div>
-    </div>
+    <div class="header">items / drop 01</div>
 
     <div class="product-list">
         <div class="product-card">
-            <div class="product-title">zip-hoodie / "classic"</div>
-            <div class="product-price">4500 rub</div>
-            <button class="select-btn" onclick="order('zip-hoodie')">выбрать</button>
+            <div class="image-container">
+                <img class="product-img" src="zip-hoode.jpg" alt="zip-1">
+                <img class="product-img" src="zip-hoode1.jpg" alt="zip-2">
+            </div>
+            <div class="product-info">
+                <div class="product-title">zip-hoodie / "snich"</div>
+                <div class="product-price">4500 rub</div>
+                <button class="select-btn" onclick="order('zip-hoodie')">выбрать</button>
+            </div>
         </div>
 
         <div class="product-card">
-            <div class="product-title">t-shirt / "oversize"</div>
-            <div class="product-price">2200 rub</div>
-            <button class="select-btn" onclick="order('t-shirt')">выбрать</button>
+            <div class="soon-placeholder">coming soon</div>
+            <div class="product-info">
+                <div class="product-title">t-shirt / "oversize"</div>
+                <div class="product-price">2200 rub</div>
+                <button class="select-btn" onclick="order('t-shirt')">выбрать</button>
+            </div>
         </div>
 
         <div class="product-card">
-            <div class="product-title">long sleeve / "basic"</div>
-            <div class="product-price">3100 rub</div>
-            <button class="select-btn" onclick="order('long sleeve')">выбрать</button>
+            <div class="soon-placeholder">coming soon</div>
+            <div class="product-info">
+                <div class="product-title">long sleeve / "basic"</div>
+                <div class="product-price">3100 rub</div>
+                <button class="select-btn" onclick="order('long sleeve')">выбрать</button>
+            </div>
         </div>
     </div>
 
@@ -114,7 +142,7 @@
 
         function order(item) {
             tg.sendData(item);
-            tg.close();
+            // Окно закроется само после отправки данных в бота
         }
     </script>
 </body>
