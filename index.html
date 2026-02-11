@@ -6,8 +6,8 @@
     <title>mister snich</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
-        body { font-family: 'Courier New', monospace; background: #fff; margin: 0; text-transform: lowercase; color: #000; }
-        .page { display: none; padding: 20px; }
+        body { font-family: 'Courier New', monospace; background: #fff; margin: 0; text-transform: lowercase; color: #000; overflow-x: hidden; }
+        .page { display: none; padding: 20px; box-sizing: border-box; }
         .active { display: block !important; }
 
         /* КАТАЛОГ */
@@ -16,36 +16,34 @@
         
         .product-card { cursor: pointer; transition: 0.3s; }
         .product-card:hover { opacity: 0.7; }
-        
         .img-wrap { width: 100%; aspect-ratio: 3/4; background: #f2f2f2; overflow: hidden; }
         .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* СЛАЙДЕР (ГОРИЗОНТАЛЬНЫЙ) */
-        .swiper { width: 100%; aspect-ratio: 3/4; }
+        /* СЛАЙДЕР */
+        .swiper { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; --swiper-navigation-color: #000; --swiper-pagination-color: #000; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
-        .swiper-pagination-bullet-active { background: #000 !important; }
 
         /* СТРАНИЦА ТОВАРА */
         .product-view { display: flex; gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .view-left { flex: 0 0 60%; min-width: 0; } 
+        .view-left { flex: 0 0 60%; min-width: 0; position: relative; } 
         .view-right { flex: 1; }
 
         @media (max-width: 900px) {
-            .product-view { flex-direction: column; }
+            .product-view { flex-direction: column; gap: 20px; }
             .view-left { width: 100%; }
         }
 
-        /* КНОПКИ И ХОВЕРЫ */
-        .back-btn { cursor: pointer; opacity: 0.5; margin-bottom: 20px; display: inline-block; transition: 0.3s; }
+        /* КНОПКИ */
+        .back-btn { cursor: pointer; opacity: 0.5; margin-bottom: 20px; display: inline-block; transition: 0.3s; border: none; background: none; font-family: inherit; font-size: 14px; padding: 0; }
         .back-btn:hover { opacity: 1; transform: translateX(-3px); }
 
-        .size-row { display: flex; gap: 10px; margin: 15px 0; }
+        .size-row { display: flex; gap: 10px; margin: 15px 0 25px; }
         .size-box { flex: 1; border: 1px solid #000; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; }
         .size-box:hover { background: #f5f5f5; }
         .size-box.selected { background: #000; color: #fff; }
 
-        .buy-btn { width: 100%; background: #000; color: #fff; border: none; padding: 20px; cursor: pointer; font-family: inherit; transition: 0.3s; }
-        .buy-btn:hover { opacity: 0.8; }
+        .buy-btn { width: 100%; background: #000; color: #fff; border: none; padding: 20px; cursor: pointer; font-family: inherit; font-size: 16px; transition: 0.3s; }
+        .buy-btn:hover { opacity: 0.7; }
 
         .desc { font-size: 13px; line-height: 1.6; white-space: pre-line; border-top: 1px solid #eee; margin-top: 20px; padding-top: 20px; }
     </style>
@@ -67,11 +65,14 @@
     </div>
 
     <div id="item-page" class="page">
-        <div class="back-btn" onclick="showPage('catalog-page')">← назад</div>
+        <button class="back-btn" onclick="showPage('catalog-page')">← назад</button>
         <div class="product-view">
             <div class="view-left">
                 <div class="swiper mySwiper">
-                    <div class="swiper-wrapper" id="slider-wrapper"></div>
+                    <div class="swiper-wrapper" id="slider-wrapper">
+                        </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
                     <div class="swiper-pagination"></div>
                 </div>
             </div>
@@ -86,20 +87,20 @@
                 </div>
 
                 <div class="desc" id="item-desc"></div>
-                <button class="buy-btn" onclick="alert('корзина скоро заработает')">в корзину</button>
+                <button class="buy-btn" onclick="alert('корзина в разработке')">в корзину</button>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        let swiper = null;
+        let mySwiper = null;
 
         const db = {
             zip: {
                 title: 'zip-hoode / "snich"',
                 price: '4500 rub',
+                // ПРОВЕРЯЙ: список твоих файлов
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
                 desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70\n\n400 rub shipping`
             }
@@ -112,23 +113,35 @@
         }
 
         function openProduct(id) {
-            const p = db[id];
-            if(!p) return;
+            const data = db[id];
+            if(!data) return;
 
-            document.getElementById('item-title').innerText = p.title;
-            document.getElementById('item-price').innerText = p.price;
-            document.getElementById('item-desc').innerText = p.desc;
+            document.getElementById('item-title').innerText = data.title;
+            document.getElementById('item-price').innerText = data.price;
+            document.getElementById('item-desc').innerText = data.desc;
 
-            let slides = p.imgs.map(src => `<div class="swiper-slide"><img src="${src}"></div>`).join('');
-            document.getElementById('slider-wrapper').innerHTML = slides;
+            // Генерируем слайды
+            const wrapper = document.getElementById('slider-wrapper');
+            wrapper.innerHTML = data.imgs.map(src => `<div class="swiper-slide"><img src="${src}"></div>`).join('');
 
-            if(swiper) swiper.destroy();
-            swiper = new Swiper(".mySwiper", {
+            // Убиваем старый слайдер и создаем новый
+            if (mySwiper) mySwiper.destroy(true, true);
+            
+            mySwiper = new Swiper(".mySwiper", {
                 direction: "horizontal",
-                pagination: { el: ".swiper-pagination", clickable: true }
+                loop: false,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true
+                },
+                observer: true,
+                observeParents: true
             });
 
-            document.querySelectorAll('.size-box').forEach(b => b.classList.remove('selected'));
             showPage('item-page');
         }
 
