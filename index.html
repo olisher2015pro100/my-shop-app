@@ -5,115 +5,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --tg-theme-bg-color: #fff;
-            --tg-theme-text-color: #000;
-            --tg-theme-button-color: #3390ec;
-            --tg-theme-button-text-color: #fff;
-            --tg-theme-hint-color: #707579;
-        }
-
+        /* Основные переменные для шрифта и цветов */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
+            font-family: 'Courier New', Courier, monospace; /* Тот самый стиль */
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
             margin: 0;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            align-items: center;
+            text-transform: lowercase; /* Все буквы маленькие для стиля */
         }
 
-        .header {
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .nav-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+
+        .nav-item {
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .active {
+            background-color: rgba(128, 128, 128, 0.2); /* Серая плашка как на скрине */
+        }
+
+        .product-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
 
         .product-card {
-            background: rgba(128, 128, 128, 0.05);
-            border-radius: 15px;
-            padding: 15px;
-            border: 1px solid rgba(128, 128, 128, 0.1);
+            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+            padding-bottom: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .product-image {
-            width: 100%;
-            height: 180px;
-            background: #f0f0f0; /* Заглушка для фото */
-            border-radius: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
+            gap: 10px;
         }
 
         .product-title {
             font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            text-transform: lowercase;
+            letter-spacing: 1px;
         }
 
         .product-price {
-            color: var(--tg-theme-button-color);
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        button {
-            width: 100%;
-            background-color: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        button:active {
+            font-size: 14px;
             opacity: 0.7;
+        }
+
+        .select-btn {
+            align-self: flex-start;
+            background-color: var(--tg-theme-button-color, #000);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Убираем синий цвет кнопок, если хотим монохром */
+        .select-btn {
+            background-color: var(--tg-theme-text-color);
+            color: var(--tg-theme-bg-color);
         }
     </style>
 </head>
 <body>
-    <div class="header">каталог товаров</div>
 
-    <div class="product-card">
-        <div class="product-image">🧥</div>
-        <div class="product-title">zip-hoodie</div>
-        <div class="product-price">4500 ₽</div>
-        <button onclick="order('zip-hoodie')">выбрать</button>
+    <div class="nav-bar">
+        <div class="nav-item active">каталог</div>
+        <div class="nav-item">sale</div>
+        <div class="nav-item">коллекции</div>
+        <div class="nav-item">о нас</div>
     </div>
 
-    <div class="product-card">
-        <div class="product-image">👕</div>
-        <div class="product-title">t-shirt</div>
-        <div class="product-price">2200 ₽</div>
-        <button onclick="order('t-shirt')">выбрать</button>
-    </div>
+    <div class="product-list">
+        <div class="product-card">
+            <div class="product-title">zip-hoodie / "classic"</div>
+            <div class="product-price">4500 rub</div>
+            <button class="select-btn" onclick="order('zip-hoodie')">выбрать</button>
+        </div>
 
-    <div class="product-card">
-        <div class="product-image">🧣</div>
-        <div class="product-title">long sleeve</div>
-        <div class="product-price">3100 ₽</div>
-        <button onclick="order('long sleeve')">выбрать</button>
+        <div class="product-card">
+            <div class="product-title">t-shirt / "oversize"</div>
+            <div class="product-price">2200 rub</div>
+            <button class="select-btn" onclick="order('t-shirt')">выбрать</button>
+        </div>
+
+        <div class="product-card">
+            <div class="product-title">long sleeve / "basic"</div>
+            <div class="product-price">3100 rub</div>
+            <button class="select-btn" onclick="order('long sleeve')">выбрать</button>
+        </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        // Подстройка темы под Telegram (светлая/темная)
-        document.body.style.setProperty('--tg-theme-bg-color', tg.backgroundColor);
-        document.body.style.setProperty('--tg-theme-text-color', tg.textColor);
 
         function order(item) {
             tg.sendData(item);
