@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mister snich</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css" rel="stylesheet" />
     <style>
         :root { 
             --main-font: 'Courier New', monospace; 
@@ -17,7 +19,7 @@
             --border-color: #222222;
         }
 
-        /* Надпись soon для темной темы */
+        /* Белый soon в темной теме */
         .soon-box { color: #000000 !important; opacity: 1 !important; } 
         body.dark-mode .soon-box { color: #ffffff !important; opacity: 1 !important; }
 
@@ -31,8 +33,8 @@
             padding: 15px 20px; border-bottom: 1px solid var(--border-color);
             position: sticky; top: 0; background: var(--bg-color); z-index: 1000;
         }
-        .header-right { display: flex; gap: 20px; }
-        .nav-link { cursor: pointer; text-decoration: underline; }
+        .nav-link { cursor: pointer; text-decoration: underline; transition: 0.3s; }
+        .nav-link:hover { opacity: 0.5; }
 
         .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .active { display: block !important; }
@@ -43,36 +45,36 @@
             max-width: 1000px; margin: 40px auto; 
         }
 
-        /* КАРТОЧКА ТОВАРА */
         .product-layout { 
             display: flex; gap: 40px; max-width: 1000px; margin: 0 auto; align-items: flex-start; 
         }
-        .product-media { flex: 1.2; max-width: 500px; }
+        .product-media { flex: 1.2; max-width: 500px; width: 100%; }
         .product-info { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
 
-        .img-container { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; overflow: hidden; }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .swiper { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; }
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* ВЫБОР РАЗМЕРА */
+        /* ИСПРАВЛЕННЫЕ КНОПКИ С ХОВЕРОМ */
         .size-selector { display: flex; gap: 10px; margin: 20px 0; width: 100%; }
         .size-btn { 
             flex: 1; border: 1px solid var(--text-color); padding: 12px; text-align: center; 
-            cursor: pointer; transition: 0.2s; font-size: 13px;
+            cursor: pointer; transition: 0.2s; font-size: 13px; background: transparent; color: var(--text-color);
         }
+        .size-btn:hover { background: var(--text-color); color: var(--bg-color); } /* Яркий инверт при наведении */
         .size-btn.selected { background: var(--text-color); color: var(--bg-color); }
+
+        .action-btn { 
+            width: 100%; background: var(--text-color); color: var(--bg-color); 
+            border: 1px solid var(--text-color); padding: 20px; cursor: pointer; font-family: inherit; 
+            font-size: 16px; font-weight: 600; transition: 0.3s;
+        }
+        .action-btn:hover { opacity: 0.7; transform: translateY(-1px); } /* Видимый эффект */
 
         input {
             width: 100%; padding: 15px; margin-bottom: 15px; box-sizing: border-box;
             background: transparent; border: 1px solid var(--text-color);
             color: var(--text-color); font-family: inherit; outline: none;
         }
-
-        .action-btn { 
-            width: 100%; background: var(--text-color); color: var(--bg-color); 
-            border: none; padding: 20px; cursor: pointer; font-family: inherit; 
-            font-size: 16px; font-weight: 600; transition: 0.3s;
-        }
-        .action-btn:hover { opacity: 0.8; }
 
         /* КОРЗИНА */
         #cart-panel { 
@@ -86,7 +88,6 @@
         @media (max-width: 768px) {
             .catalog-grid { grid-template-columns: 1fr; }
             .product-layout { flex-direction: column; }
-            #cart-panel { width: 100%; }
         }
     </style>
 </head>
@@ -103,12 +104,14 @@
     <div id="home" class="page active">
         <div class="catalog-grid">
             <div class="product-card" onclick="loadItem('zip')">
-                <div class="img-container"><img src="zip-hoode.jpg"></div>
+                <div style="width:100%; aspect-ratio:3/4; background:#f9f9f9; overflow:hidden;">
+                    <img src="zip-hoode.jpg" style="width:100%; height:100%; object-fit:cover;">
+                </div>
                 <div style="margin-top:15px; font-weight:600;">zip-hoode / "snich"</div>
                 <div>4500 rub</div>
             </div>
             <div class="product-card">
-                <div class="img-container soon-box" style="display:flex; align-items:center; justify-content:center; font-weight:600; font-size:24px; background: rgba(128,128,128,0.1);">
+                <div class="soon-box" style="width:100%; aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:24px; background: rgba(128,128,128,0.1);">
                     soon
                 </div>
                 <div style="margin-top:15px; font-weight:600; opacity: 0.4;">t-shirt / "snich"</div>
@@ -121,7 +124,11 @@
         <div onclick="showPage('home')" style="cursor:pointer; opacity:0.5; margin-bottom:20px;">← назад</div>
         <div class="product-layout">
             <div class="product-media">
-                <div class="img-container" id="p-img"></div>
+                <div class="swiper mySwiper">
+                    <div class="swiper-wrapper" id="slides"></div>
+                    <div class="swiper-button-next" style="color:var(--text-color)"></div>
+                    <div class="swiper-button-prev" style="color:var(--text-color)"></div>
+                </div>
             </div>
             <div class="product-info">
                 <h1 id="p-title" style="margin:0 0 10px 0;"></h1>
@@ -133,7 +140,6 @@
                     <div class="size-btn" onclick="selectSize(this)">baby-size</div>
                     <div class="size-btn" onclick="selectSize(this)">big-size</div>
                 </div>
-
                 <button class="action-btn" onclick="addToCart()">в корзину</button>
             </div>
         </div>
@@ -144,7 +150,7 @@
         <div style="max-width: 450px; margin: 40px auto;">
             <h2 style="margin-bottom:30px;">оформление заказа</h2>
             <input type="text" id="name" placeholder="фио">
-            <input type="text" id="address" placeholder="город / адрес">
+            <input type="text" id="address" placeholder="город / адрес (подсказки dadata)">
             <input type="text" id="tg" placeholder="telegram (@)">
             <button class="action-btn" style="margin-top:10px;" onclick="finishOrder()">подтвердить заказ</button>
         </div>
@@ -165,46 +171,65 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
+
     <script>
         let cart = [];
         let curItem = null;
         let selectedSize = null;
+        let swiper = null;
 
         const items = {
             zip: {
                 title: 'zip-hoode / "snich"',
                 price: 4500,
-                img: 'zip-hoode.jpg',
-                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70'
+                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
+                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка\n\nbaby size (m-l) 65/75см\nbig size (xl+) 70/80см'
             }
         };
 
+        // Инициализация Dadata
+        $("#address").suggestions({
+            token: "ТВОЙ_API_KEY_ТУТ", // ВСТАВЬ СВОЙ КЛЮЧ
+            type: "ADDRESS"
+        });
+
         function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            $(".page").removeClass("active");
+            $("#" + id).addClass("active");
             window.scrollTo(0,0);
         }
 
         function loadItem(id) {
             curItem = items[id];
             selectedSize = null;
-            document.getElementById('p-title').innerText = curItem.title;
-            document.getElementById('p-price').innerText = curItem.price + ' rub';
-            document.getElementById('p-desc').innerText = curItem.desc;
-            document.getElementById('p-img').innerHTML = `<img src="${curItem.img}">`;
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+            $("#p-title").text(curItem.title);
+            $("#p-price").text(curItem.price + ' rub');
+            $("#p-desc").text(curItem.desc);
+            
+            $("#slides").html(curItem.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join(''));
+
+            if(swiper) swiper.destroy();
+            swiper = new Swiper(".mySwiper", {
+                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                loop: true
+            });
+
+            $(".size-btn").removeClass("selected");
             showPage('product');
         }
 
         function selectSize(el) {
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-            el.classList.add('selected');
+            $(".size-btn").removeClass("selected");
+            $(el).addClass("selected");
             selectedSize = el.innerText;
         }
 
         function toggleCart(show) {
-            document.getElementById('cart-panel').classList.toggle('open', show);
-            document.getElementById('mask').style.display = show ? 'block' : 'none';
+            $("#cart-panel").toggleClass("open", show);
+            $("#mask").toggle(show);
         }
 
         function addToCart() {
@@ -215,27 +240,26 @@
         }
 
         function updateCart() {
-            const list = document.getElementById('cart-items');
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            document.getElementById('count').innerText = cart.length;
-            document.getElementById('total-price').innerText = total + ' rub';
+            let total = cart.reduce((sum, i) => sum + i.price, 0);
+            $("#count").text(cart.length);
+            $("#total-price").text(total + ' rub');
             
             if(cart.length === 0) {
-                list.innerHTML = '<div style="text-align:center; opacity:0.3; margin-top:50px;">пусто</div>';
+                $("#cart-items").html('<div style="text-align:center; opacity:0.3; margin-top:50px;">пусто</div>');
                 return;
             }
 
-            list.innerHTML = cart.map((item, i) => `
-                <div style="display:flex; gap:15px; margin-bottom:20px;">
-                    <img src="${item.img}" style="width:60px; height:80px; object-fit:cover;">
-                    <div style="flex:1; font-size:12px;">
+            $("#cart-items").html(cart.map((item, i) => `
+                <div style="display:flex; gap:15px; margin-bottom:20px; font-size:12px;">
+                    <img src="${item.imgs[0]}" style="width:60px; height:80px; object-fit:cover;">
+                    <div style="flex:1;">
                         <div style="font-weight:600;">${item.title}</div>
                         <div style="opacity:0.6;">размер: ${item.size}</div>
                         <div style="margin-top:5px; cursor:pointer; text-decoration:underline;" onclick="cart.splice(${i},1); updateCart();">удалить</div>
                     </div>
                     <div style="font-weight:600;">${item.price}</div>
                 </div>
-            `).join('');
+            `).join(''));
         }
 
         function startCheckout() {
@@ -245,9 +269,8 @@
         }
 
         function finishOrder() {
-            if(!document.getElementById('name').value) return alert('заполни данные');
-            // Здесь будет отправка данных заказа
-            alert('заказ принят! скоро свяжемся.');
+            if(!$("#name").val() || !$("#address").val()) return alert('заполни данные');
+            alert('заказ принят!');
             cart = [];
             updateCart();
             showPage('home');
