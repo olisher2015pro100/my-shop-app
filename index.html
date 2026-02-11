@@ -18,58 +18,81 @@
         header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #f0f0f0; margin-bottom: 20px; }
         .cart-trigger { cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: underline; }
 
-        /* Каталог */
+        /* КАТАЛОГ */
         .catalog-list { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1000px; margin: 0 auto; }
         @media (max-width: 600px) { .catalog-list { grid-template-columns: 1fr; } }
         .product-card { cursor: pointer; transition: 0.4s; }
         .img-wrap { width: 100%; aspect-ratio: 3/4; background: #f7f7f7; overflow: hidden; }
         .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Товар */
-        .product-view { display: flex; gap: 50px; max-width: 1200px; margin: 0 auto; }
-        .view-left { flex: 0 0 55%; min-width: 0; } 
-        .view-right { flex: 1; display: flex; flex-direction: column; }
-        @media (max-width: 900px) { .product-view { flex-direction: column; } .view-left { width: 100%; } }
+        /* ТОВАР (ИСПРАВЛЕННЫЙ БЛОК) */
+        .product-view { display: flex; gap: 40px; max-width: 1200px; margin: 0 auto; align-items: flex-start; }
         
-        .price { font-size: 20px; margin: 15px 0 30px; font-weight: 600; }
-        .size-row { display: flex; gap: 10px; margin-bottom: 30px; }
-        .size-box { flex: 1; border: 1px solid #000; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .size-box.selected { background: #000; color: #fff; }
-        .buy-btn { width: 100%; background: #000; color: #fff; border: none; padding: 20px; cursor: pointer; font-family: inherit; font-size: 16px; font-weight: 600; }
+        .view-left { 
+            flex: 0 0 50%; 
+            position: sticky; 
+            top: 20px; 
+            max-height: 85vh; /* Ограничиваем высоту фото */
+        } 
+        
+        .view-right { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            padding-bottom: 50px;
+        }
 
-        /* ВЫЕЗЖАЮЩАЯ КОРЗИНА (SIDE DRAWER) */
+        /* Слайдер с ограничением высоты */
+        .swiper { 
+            width: 100%; 
+            height: 85vh; 
+            background: #fafafa; 
+            --swiper-navigation-color: #000; 
+            --swiper-pagination-color: #000; 
+        }
+        .swiper-slide img { width: 100%; height: 100%; object-fit: contain; } /* "contain" чтобы фото не обрезалось */
+
+        @media (max-width: 900px) { 
+            .product-view { flex-direction: column; } 
+            .view-left { width: 100%; position: relative; top: 0; height: 60vh; } 
+            .swiper { height: 60vh; }
+        }
+        
+        /* Текст и Кнопки */
+        h1 { font-size: 24px; margin: 0; font-weight: 600; }
+        .price { font-size: 18px; margin: 10px 0 25px; font-weight: 600; }
+        .size-row { display: flex; gap: 10px; margin-bottom: 25px; }
+        .size-box { flex: 1; border: 1px solid #000; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .size-box.selected { background: #000; color: #fff; }
+        .buy-btn { width: 100%; background: #000; color: #fff; border: none; padding: 18px; cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 600; }
+
+        /* ВЫЕЗЖАЮЩАЯ КОРЗИНА */
         #cart-drawer { 
-            position: fixed; top: 0; right: -100%; width: 400px; height: 100%; 
-            background: #fff; z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            box-shadow: -5px 0 15px rgba(0,0,0,0.05); display: flex; flex-direction: column;
+            position: fixed; top: 0; right: -100%; width: 380px; height: 100%; 
+            background: #fff; z-index: 2000; transition: 0.3s ease; 
+            display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.05);
         }
         #cart-drawer.open { right: 0; }
         @media (max-width: 450px) { #cart-drawer { width: 100%; } }
 
         .drawer-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .close-drawer { cursor: pointer; font-size: 24px; }
-        
         .drawer-content { flex: 1; overflow-y: auto; padding: 20px; }
-        .cart-item { display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f9f9f9; }
-        .cart-item img { width: 80px; height: 100px; object-fit: cover; background: #eee; }
-        .item-info { flex: 1; font-size: 13px; }
-        .item-info b { display: block; margin-bottom: 5px; font-size: 14px; }
-
-        .drawer-footer { padding: 20px; border-top: 1px solid #eee; background: #fff; }
-        .total-row { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 600; }
+        .cart-item { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; }
+        .cart-item img { width: 70px; height: 90px; object-fit: cover; background: #f0f0f0; }
+        .item-info { font-size: 12px; }
         
-        #overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.2); z-index: 1999; display: none; 
-        }
+        .drawer-footer { padding: 20px; border-top: 1px solid #eee; }
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 600; font-size: 14px; }
+        
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); z-index: 1999; display: none; }
 
-        .desc { font-size: 13px; line-height: 1.6; white-space: pre-line; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; }
+        .desc { font-size: 13px; line-height: 1.6; white-space: pre-line; margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; color: #333; }
     </style>
 </head>
 <body>
 
     <header>
-        <div style="font-size: 12px; opacity: 0.5;">mister snich / drop 01</div>
+        <div style="font-size: 11px; opacity: 0.5;">mister snich / drop 01</div>
         <div class="cart-trigger" onclick="toggleCart(true)">корзина (<span id="cart-count-header">0</span>)</div>
     </header>
 
@@ -79,15 +102,11 @@
                 <div class="img-wrap"><img src="zip-hoode.jpg"></div>
                 <div style="margin-top:15px; font-weight: 600;">zip-hoode / "snich"<br>4500 rub</div>
             </div>
-            <div class="product-card">
-                <div class="img-wrap" style="display: flex; align-items: center; justify-content: center; opacity: 0.2;">soon</div>
-                <div style="margin-top:15px;">t-shirt / "v2"<br>tba</div>
-            </div>
         </div>
     </div>
 
     <div id="item-page" class="page">
-        <button class="back-btn" onclick="showPage('catalog-page')" style="cursor:pointer; border:none; background:none; font-family:inherit; margin-bottom:20px; opacity:0.5;">← назад к списку</button>
+        <button onclick="showPage('catalog-page')" style="cursor:pointer; border:none; background:none; font-family:inherit; margin-bottom:20px; opacity:0.4; font-size:12px;">← назад к списку</button>
         <div class="product-view">
             <div class="view-left">
                 <div class="swiper mySwiper">
@@ -98,17 +117,17 @@
                 </div>
             </div>
             <div class="view-right">
-                <h1 id="item-title" style="margin:0; font-weight: 600;"></h1>
+                <h1 id="item-title"></h1>
                 <div id="item-price" class="price"></div>
                 
-                <div style="font-size: 11px; opacity: 0.5; margin-bottom: 10px;">размер:</div>
+                <div style="font-size: 11px; opacity: 0.5; margin-bottom: 8px;">размер:</div>
                 <div class="size-row">
                     <div class="size-box" onclick="selectSize(this)">baby-size</div>
                     <div class="size-box" onclick="selectSize(this)">big-size</div>
                 </div>
 
-                <div class="desc" id="item-desc"></div>
                 <button class="buy-btn" onclick="addToCart()">в корзину</button>
+                <div class="desc" id="item-desc"></div>
             </div>
         </div>
     </div>
@@ -116,11 +135,10 @@
     <div id="overlay" onclick="toggleCart(false)"></div>
     <div id="cart-drawer">
         <div class="drawer-header">
-            <span style="font-weight: 600;">корзина</span>
-            <span class="close-drawer" onclick="toggleCart(false)">✕</span>
+            <span style="font-weight: 600; font-size: 14px;">корзина</span>
+            <span style="cursor:pointer;" onclick="toggleCart(false)">✕</span>
         </div>
-        <div class="drawer-content" id="cart-items-list">
-            </div>
+        <div class="drawer-content" id="cart-items-list"></div>
         <div class="drawer-footer">
             <div class="total-row">
                 <span>стоимость</span>
@@ -140,9 +158,9 @@
             zip: {
                 id: 'zip',
                 title: 'zip-hoode / "snich"',
-                price: 4500, // Число для расчетов
+                price: 4500,
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
-                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70`
+                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70`
             }
         };
 
@@ -189,11 +207,8 @@
             const size = sizeEl.innerText;
             const existing = cart.find(i => i.id === currentItem.id && i.size === size);
 
-            if (existing) {
-                existing.qty++;
-            } else {
-                cart.push({ ...currentItem, size: size, qty: 1 });
-            }
+            if (existing) { existing.qty++; } 
+            else { cart.push({ ...currentItem, size: size, qty: 1 }); }
             
             updateCartUI();
             toggleCart(true);
@@ -208,7 +223,7 @@
             document.getElementById('cart-total').innerText = totalSum + ' rub';
 
             if (cart.length === 0) {
-                list.innerHTML = '<div style="opacity:0.5; text-align:center; margin-top:50px;">ваша корзина пуста</div>';
+                list.innerHTML = '<div style="opacity:0.3; text-align:center; margin-top:40px; font-size:12px;">ваша корзина пуста</div>';
                 return;
             }
 
@@ -216,11 +231,11 @@
                 <div class="cart-item">
                     <img src="${item.imgs[0]}">
                     <div class="item-info">
-                        <b>${item.title}</b>
-                        <span>размер: ${item.size}</span><br>
-                        <span>количество: ${item.qty}</span>
-                        <div style="margin-top:10px; font-weight:600;">${item.price * item.qty} rub</div>
-                        <div onclick="removeItem(${idx})" style="text-decoration:underline; cursor:pointer; margin-top:5px; opacity:0.5; font-size:10px;">удалить</div>
+                        <div style="font-weight:600; margin-bottom:3px;">${item.title}</div>
+                        <div style="opacity:0.6;">размер: ${item.size}</div>
+                        <div style="opacity:0.6;">количество: ${item.qty}</div>
+                        <div style="margin-top:5px; font-weight:600;">${item.price * item.qty} rub</div>
+                        <div onclick="removeItem(${idx})" style="text-decoration:underline; cursor:pointer; margin-top:5px; opacity:0.4; font-size:10px;">удалить</div>
                     </div>
                 </div>
             `).join('');
