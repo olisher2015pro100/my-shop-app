@@ -6,69 +6,77 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: var(--tg-theme-bg-color, #fff);
-            --text: var(--tg-theme-text-color, #000);
-            --hint: var(--tg-theme-hint-color, #999);
-            --accent: #808080;
+            --bg: #ffffff;
+            --text: #000000;
+            --light-gray: #f2f2f2;
+            --border: #e0e0e0;
         }
 
         body {
             font-family: 'Courier New', Courier, monospace;
             background-color: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             text-transform: lowercase;
-            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        .page { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- КАТАЛОГ --- */
-        .catalog-item { border-bottom: 1px solid rgba(128,128,128,0.2); padding: 15px 0; cursor: pointer; }
-        .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; margin-bottom: 10px; }
-        .slider img, .slider .soon { 
-            width: 150px; height: 150px; flex-shrink: 0; 
-            scroll-snap-align: start; border-radius: 8px; object-fit: cover; 
-            background: rgba(128,128,128,0.1); display: flex; align-items: center; justify-content: center;
+        /* ГЛАВНАЯ */
+        .catalog-item { margin-bottom: 40px; cursor: pointer; }
+        .horizontal-slider { 
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
+            gap: 10px; margin-bottom: 10px; scrollbar-width: none; 
+        }
+        .horizontal-slider::-webkit-scrollbar { display: none; }
+        .horizontal-slider img, .soon-box { 
+            width: 85%; height: 300px; flex-shrink: 0; scroll-snap-align: center;
+            object-fit: cover; border-radius: 4px; background: var(--light-gray);
         }
 
-        /* --- СТРАНИЦА ТОВАРА --- */
-        .product-flex { display: flex; gap: 20px; }
-        .product-left { width: 40%; }
-        .product-right { width: 60%; }
-        .desc { font-size: 12px; line-height: 1.4; white-space: pre-wrap; margin: 15px 0; }
-        .size-selector { display: flex; gap: 10px; margin: 15px 0; }
-        .size-btn { border: 1px solid var(--text); padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        .size-btn.selected { background: var(--text); color: var(--bg); }
-
-        /* --- ОБЩИЕ КНОПКИ --- */
-        .main-btn { 
-            width: 100%; background: var(--text); color: var(--bg); 
-            border: none; padding: 12px; border-radius: 25px; 
-            font-family: inherit; font-size: 14px; margin-top: 10px;
+        /* ТОВАР */
+        .product-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .product-images { flex: 1; min-width: 280px; }
+        .product-images img { width: 100%; margin-bottom: 10px; border-radius: 4px; }
+        .product-details { flex: 1; min-width: 280px; }
+        .price { font-size: 20px; margin: 10px 0; font-weight: bold; }
+        .description { font-size: 13px; line-height: 1.6; white-space: pre-line; margin-bottom: 25px; color: #444; }
+        
+        .size-box { display: flex; gap: 10px; margin: 15px 0; }
+        .size-btn { 
+            border: 1px solid var(--text); padding: 8px 15px; cursor: pointer; 
+            font-size: 12px; transition: 0.2s;
         }
+        .size-btn.active { background: var(--text); color: var(--bg); }
 
-        /* --- ФОРМА --- */
-        input, select, textarea { 
-            width: 100%; background: transparent; border: 1px solid rgba(128,128,128,0.3); 
-            color: var(--text); padding: 10px; margin-bottom: 10px; border-radius: 8px; font-family: inherit;
-            box-sizing: border-box;
+        /* КОРЗИНА И ФОРМЫ */
+        .cart-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 15px 0; }
+        input, textarea, select { 
+            width: 100%; padding: 12px; margin-bottom: 12px; 
+            border: 1px solid var(--border); font-family: inherit; font-size: 14px; box-sizing: border-box;
         }
+        .checkout-flex { display: flex; gap: 30px; flex-wrap: wrap; }
+        .checkout-left { flex: 2; min-width: 300px; }
+        .checkout-right { flex: 1; min-width: 250px; background: var(--light-gray); padding: 20px; border-radius: 8px; }
 
-        .checkout-grid { display: flex; flex-direction: column; }
+        /* КНОПКИ */
+        .btn-black { 
+            width: 100%; background: var(--text); color: var(--bg); border: none; 
+            padding: 15px; cursor: pointer; font-family: inherit; font-size: 14px; margin-top: 10px;
+        }
+        .back-link { cursor: pointer; display: inline-block; margin-bottom: 20px; opacity: 0.6; font-size: 12px; }
     </style>
 </head>
 <body>
 
     <div id="catalog" class="page active">
-        <div style="font-size: 14px; opacity: 0.5; margin-bottom: 20px;">katalog / items</div>
+        <div style="font-size: 14px; margin-bottom: 30px; opacity: 0.5;">items / drop 01</div>
         
-        <div class="catalog-item" onclick="showProduct('zip')">
-            <div class="slider">
+        <div class="catalog-item" onclick="openProduct('zip')">
+            <div class="horizontal-slider">
                 <img src="zip-hoode.jpg">
                 <img src="zip-hoode1.jpg">
             </div>
@@ -77,139 +85,179 @@
         </div>
 
         <div class="catalog-item">
-            <div class="slider"><div class="soon">soon</div></div>
+            <div class="soon-box" style="display:flex; align-items:center; justify-content:center;">soon</div>
             <div style="font-weight: bold;">t-shirt / "oversize"</div>
             <div style="opacity: 0.7;">2200 rub</div>
         </div>
     </div>
 
-    <div id="product" class="page">
-        <div onclick="showPage('catalog')" style="margin-bottom: 20px; cursor: pointer;">← назад</div>
-        <div class="product-flex">
-            <div class="product-left" id="prod-images"></div>
-            <div class="product-right">
-                <div id="prod-title" style="font-size: 18px; font-weight: bold;"></div>
-                <div id="prod-price" style="margin-top: 5px; opacity: 0.8;"></div>
-                <div class="desc" id="prod-desc"></div>
+    <div id="product-page" class="page">
+        <span class="back-link" onclick="showPage('catalog')">← каталог</span>
+        <div class="product-container">
+            <div class="product-images" id="p-images"></div>
+            <div class="product-details">
+                <h1 id="p-title" style="margin:0; font-size: 22px;"></h1>
+                <div class="price" id="p-price"></div>
+                <div class="description" id="p-desc"></div>
                 
-                <div style="font-size: 12px;">размер:</div>
-                <div class="size-selector" id="prod-sizes"></div>
+                <div style="font-size: 12px; margin-bottom: 10px;">выберите размер:</div>
+                <div class="size-box" id="p-sizes"></div>
                 
-                <button class="main-btn" onclick="addToCart()">в корзину</button>
+                <button class="btn-black" onclick="addToCart()">в корзину</button>
             </div>
         </div>
     </div>
 
-    <div id="cart" class="page">
-        <div style="font-size: 18px; margin-bottom: 20px;">корзина</div>
-        <div id="cart-items"></div>
-        <button class="main-btn" onclick="showPage('checkout')">оформить заказ</button>
-        <div onclick="showPage('catalog')" style="text-align: center; margin-top: 15px; opacity: 0.5;">продолжить покупки</div>
+    <div id="cart-page" class="page">
+        <div style="font-size: 20px; margin-bottom: 30px;">корзина</div>
+        <div id="cart-content"></div>
+        <div id="cart-total" style="text-align: right; margin: 20px 0; font-weight: bold;"></div>
+        <button class="btn-black" onclick="showPage('checkout-page')">оформить заказ</button>
+        <div style="text-align: center; margin-top: 20px; font-size: 12px; opacity: 0.5;" onclick="showPage('catalog')">вернуться к покупкам</div>
     </div>
 
-    <div id="checkout" class="page">
-        <div style="font-size: 18px; margin-bottom: 20px;">оформление</div>
-        <div class="checkout-grid">
-            <input type="text" id="name" placeholder="имя и фамилия">
-            <input type="tel" id="phone" placeholder="телефон">
-            <input type="email" id="email" placeholder="email">
-            <input type="text" id="social" placeholder="tg / vk">
-            <textarea id="address" placeholder="адрес доставки (город, улица, дом, кв)"></textarea>
+    <div id="checkout-page" class="page">
+        <span class="back-link" onclick="showPage('cart-page')">← в корзину</span>
+        <div class="checkout-flex">
+            <div class="checkout-left">
+                <div style="margin-bottom: 20px; font-weight: bold;">контактная информация</div>
+                <input type="text" id="f_name" placeholder="имя">
+                <input type="text" id="f_last" placeholder="фамилия">
+                <input type="tel" id="f_phone" placeholder="телефон">
+                <input type="email" id="f_email" placeholder="email">
+                <input type="text" id="f_soc" placeholder="ссылка на vk / telegram">
+                
+                <div style="margin: 20px 0 10px; font-weight: bold;">адрес доставки</div>
+                <input type="text" id="f_city" placeholder="населенный пункт">
+                <textarea id="f_addr" placeholder="адрес (улица, дом, кв)"></textarea>
+                <textarea id="f_comm" placeholder="комментарий к заказу"></textarea>
+            </div>
             
-            <select id="shipping" onchange="updateTotal()">
-                <option value="400">сдэк (+400 rub)</option>
-                <option value="400">почта рф (+400 rub)</option>
-            </select>
-            
-            <div id="final-total" style="margin: 20px 0; font-weight: bold;">итого: 0 rub</div>
-            <button class="main-btn" onclick="showPage('payment')">оплатить заказ</button>
+            <div class="checkout-right">
+                <div style="font-weight: bold; margin-bottom: 15px;">доставка</div>
+                <select id="f_ship" onchange="updateFinalTotal()">
+                    <option value="400">сдэк — 400 rub</option>
+                    <option value="400">почта россии — 400 rub</option>
+                </select>
+                <div id="final-price-box" style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 15px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>товары:</span> <span id="summary-items">0 rub</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                        <span>доставка:</span> <span>400 rub</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px;">
+                        <span>итого:</span> <span id="summary-total">0 rub</span>
+                    </div>
+                </div>
+                <button class="btn-black" onclick="showPage('pay-page')">оплатить заказ</button>
+            </div>
         </div>
     </div>
 
-    <div id="payment" class="page" style="text-align: center;">
-        <div style="font-size: 18px; margin-bottom: 30px;">оплата sbp</div>
-        <div style="background: #f0f0f0; padding: 40px; border-radius: 15px; margin-bottom: 20px; color: #000;">
-            [ здесь будет qr-код ]
+    <div id="pay-page" class="page" style="text-align: center;">
+        <div style="font-size: 20px; margin-bottom: 40px;">оплата заказа</div>
+        <div style="border: 2px solid #000; padding: 50px 20px; margin-bottom: 30px; display: inline-block; border-radius: 12px;">
+            <div style="font-weight: bold; font-size: 24px;">СБП</div>
+            <div style="font-size: 12px; margin-top: 10px;">нажмите для перехода в приложение банка</div>
         </div>
-        <div style="font-size: 12px; opacity: 0.7;">после оплаты нажмите кнопку ниже</div>
-        <button class="main-btn" onclick="finishOrder()">я оплатил</button>
+        <button class="btn-black" onclick="sendOrder()">подтвердить оплату</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let currentProduct = null;
-        let selectedSize = null;
         let cart = [];
+        let selectedSize = null;
+        let currentItem = null;
 
-        const products = {
+        const data = {
             zip: {
                 title: 'zip-hoode / "snich"',
                 price: 4500,
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'],
                 sizes: ['baby-size', 'big-size'],
-                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево\nмашинная вышивка\n\nbaby size: l 65см / w 65\nbig size: l 70см / w 70\n\nпреордер онли\nотшив 2-3 недели'
+                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка\nкружево и кулирная гладь на заклепках\nмашинная вышивка\n\nbaby size (m-l): дл 65/75, шир 65\nbig size (xl+): дл 70/80, шир 70\n\nпреордер онли\nотшив 2-3 недели\nдоставка сдэк 5-7 дней`
             }
         };
 
-        function showPage(pageId) {
+        function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            document.getElementById(id).classList.add('active');
             window.scrollTo(0,0);
         }
 
-        function showProduct(id) {
-            currentProduct = products[id];
-            document.getElementById('prod-title').innerText = currentProduct.title;
-            document.getElementById('prod-price').innerText = currentProduct.price + ' rub';
-            document.getElementById('prod-desc').innerText = currentProduct.desc;
+        function openProduct(id) {
+            currentItem = data[id];
+            document.getElementById('p-title').innerText = currentItem.title;
+            document.getElementById('p-price').innerText = currentItem.price + ' rub';
+            document.getElementById('p-desc').innerText = currentItem.desc;
             
-            let imgCont = document.getElementById('prod-images');
-            imgCont.innerHTML = currentProduct.imgs.map(src => `<img src="${src}" style="width:100%; border-radius:8px; margin-bottom:10px;">`).join('');
+            document.getElementById('p-images').innerHTML = currentItem.imgs.map(src => `<img src="${src}">`).join('');
+            document.getElementById('p-sizes').innerHTML = currentItem.sizes.map(s => `<div class="size-btn" onclick="selectSize(this, '${s}')">${s}</div>`).join('');
             
-            let sizeCont = document.getElementById('prod-sizes');
-            sizeCont.innerHTML = currentProduct.sizes.map(s => `<div class="size-btn" onclick="selectSize(this, '${s}')">${s}</div>`).join('');
-            
-            showPage('product');
+            selectedSize = null;
+            showPage('product-page');
         }
 
-        function selectSize(el, size) {
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedSize = size;
+        function selectSize(btn, s) {
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedSize = s;
         }
 
         function addToCart() {
-            if(!selectedSize) return alert('выберите размер');
-            cart.push({ ...currentProduct, size: selectedSize });
+            if(!selectedSize) { alert('пожалуйста, выберите размер'); return; }
+            cart.push({ ...currentItem, size: selectedSize });
             renderCart();
-            showPage('cart');
+            showPage('cart-page');
         }
 
         function renderCart() {
-            let cont = document.getElementById('cart-items');
-            cont.innerHTML = cart.map(item => `
-                <div style="border-bottom:1px solid rgba(128,128,128,0.2); padding:10px 0;">
-                    ${item.title} (${item.size}) — ${item.price} rub
+            const cont = document.getElementById('cart-content');
+            if(cart.length === 0) {
+                cont.innerHTML = '<div style="text-align:center; padding:50px;">ваша корзина пуста</div>';
+                return;
+            }
+            cont.innerHTML = cart.map((item, i) => `
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight:bold;">${item.title}</div>
+                        <div style="font-size:12px; opacity:0.6;">размер: ${item.size}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div>${item.price} rub</div>
+                        <div style="font-size:10px; color:red; cursor:pointer;" onclick="removeItem(${i})">удалить</div>
+                    </div>
                 </div>
             `).join('');
-            updateTotal();
+            
+            let sum = cart.reduce((a, b) => a + b.price, 0);
+            document.getElementById('cart-total').innerText = 'сумма: ' + sum + ' rub';
+            updateFinalTotal();
         }
 
-        function updateTotal() {
-            let itemsSum = cart.reduce((sum, item) => sum + item.price, 0);
-            let ship = parseInt(document.getElementById('shipping').value) || 0;
-            document.getElementById('final-total').innerText = `итого: ${itemsSum + ship} rub`;
+        function removeItem(i) {
+            cart.splice(i, 1);
+            renderCart();
         }
 
-        function finishOrder() {
-            let data = {
+        function updateFinalTotal() {
+            let sum = cart.reduce((a, b) => a + b.price, 0);
+            let ship = 400;
+            document.getElementById('summary-items').innerText = sum + ' rub';
+            document.getElementById('summary-total').innerText = (sum + ship) + ' rub';
+        }
+
+        function sendOrder() {
+            let orderData = {
+                client: document.getElementById('f_name').value + ' ' + document.getElementById('f_last').value,
                 items: cart,
-                user: document.getElementById('name').value,
-                total: document.getElementById('final-total').innerText
+                total: document.getElementById('summary-total').innerText,
+                address: document.getElementById('f_city').value + ', ' + document.getElementById('f_addr').value
             };
-            tg.sendData(JSON.stringify(data));
+            tg.sendData(JSON.stringify(orderData));
             tg.close();
         }
     </script>
