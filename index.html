@@ -2,103 +2,117 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mister snich</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
         body { 
             font-family: 'Courier New', monospace; background: #fff; margin: 0; 
-            text-transform: lowercase; color: #000;
+            text-transform: lowercase; color: #000; overflow-x: hidden;
         }
 
-        .page { display: none; width: 100%; box-sizing: border-box; }
+        .page { display: none; padding: 20px; box-sizing: border-box; width: 100%; }
         .active { display: block !important; }
 
-        /* КАТАЛОГ (ГЛАВНЫЙ ЭКРАН) */
-        .catalog-container { padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
+        /* КАТАЛОГ — ДЕЛАЕМ КРУПНЕЕ */
         .catalog-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 40px; 
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
+            gap: 20px; padding: 20px;
         }
-        .catalog-item { cursor: pointer; text-decoration: none; color: inherit; }
-        .catalog-item img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 4px; }
-        .catalog-info { margin-top: 15px; font-size: 14px; }
+        .catalog-item img { width: 100%; height: auto; object-fit: cover; }
 
-        /* КАРТОЧКА ТОВАРА (65/35) */
-        .product-wrapper { display: flex; width: 100%; min-height: 100vh; }
-        .gallery-side { flex: 0 0 65%; }
-        .gallery-side img { width: 100%; display: block; }
-        
-        .info-side { 
-            flex: 0 0 35%; padding: 40px; position: sticky; top: 0; 
-            height: 100vh; box-sizing: border-box; display: flex; flex-direction: column;
-            border-left: 1px solid #f0f0f0; overflow-y: auto;
+        /* СТРАНИЦА ТОВАРА — КАК НА СКРИНЕ */
+        .product-wrapper { 
+            display: flex; 
+            width: 100%; 
+            min-height: 100vh;
         }
 
-        /* Адаптив для мобилок */
+        .gallery { 
+            flex: 0 0 65%; /* КАРТИНКА ЗАНИМАЕТ 65% ЭКРАНА */
+            display: flex; 
+            flex-direction: column; 
+        }
+        .gallery img { width: 100%; display: block; }
+
+        .info-panel { 
+            flex: 0 0 35%; 
+            padding: 40px; 
+            position: sticky; 
+            top: 0; 
+            height: 100vh; 
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #eee;
+        }
+
+        /* Адаптив для мобилок (все в одну колонку) */
         @media (max-width: 900px) {
             .product-wrapper { flex-direction: column; }
-            .gallery-side, .info-side { flex: none; width: 100%; }
-            .info-side { position: static; height: auto; border: none; padding: 20px; }
-            .catalog-grid { grid-template-columns: 1fr; }
+            .gallery { flex: none; width: 100%; }
+            .info-panel { flex: none; width: 100%; height: auto; position: static; border: none; padding: 20px; }
         }
 
-        .back-nav { cursor: pointer; opacity: 0.4; margin-bottom: 30px; display: block; }
-        h1 { font-size: 22px; margin: 0; font-weight: normal; }
-        .price { font-size: 18px; margin: 10px 0 30px 0; }
-        
-        .size-btns { display: flex; gap: 10px; margin: 15px 0 30px 0; }
+        h1 { font-size: 24px; margin: 0 0 10px 0; font-weight: normal; }
+        .price { font-size: 20px; margin-bottom: 30px; }
+
+        .size-box { margin-bottom: 30px; }
+        .size-btns { display: flex; gap: 10px; margin-top: 10px; }
         .size-btn { 
-            flex: 1; padding: 12px; border: 1px solid #e0e0e0; background: #fff;
-            cursor: pointer; font-family: inherit; font-size: 13px;
+            flex: 1; padding: 15px; border: 1px solid #000; background: #fff; 
+            cursor: pointer; font-family: inherit; transition: 0.3s;
         }
-        .size-btn.selected { border-color: #000; background: #000; color: #fff; }
+        .size-btn.selected { background: #000; color: #fff; }
 
-        .desc-text { font-size: 13px; line-height: 1.6; white-space: pre-line; border-top: 1px solid #f0f0f0; padding-top: 20px; }
-        .buy-btn { background: #000; color: #fff; border: none; padding: 20px; font-size: 15px; cursor: pointer; font-family: inherit; margin-top: 30px; }
+        .desc-content { 
+            font-size: 14px; line-height: 1.6; white-space: pre-line; 
+            margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;
+        }
+
+        .buy-button { 
+            background: #000; color: #fff; border: none; padding: 20px; 
+            font-size: 18px; cursor: pointer; font-family: inherit; margin-top: auto;
+        }
+
+        .back-link { cursor: pointer; margin-bottom: 20px; display: block; opacity: 0.5; }
     </style>
 </head>
 <body>
 
     <div id="catalog" class="page active">
-        <div class="catalog-container">
-            <div style="margin-bottom: 30px; opacity: 0.4;">items / drop 01</div>
-            <div class="catalog-grid">
-                <div class="catalog-item" onclick="openProduct('zip')">
-                    <img src="zip-hoode.jpg">
-                    <div class="catalog-info">
-                        <div>zip-hoode / "snich"</div>
-                        <div style="opacity: 0.5;">4500 rub</div>
-                    </div>
-                </div>
-                <div class="catalog-item" onclick="openProduct('tshirt')">
-                    <img src="t-shirt-v2.jpg"> <div class="catalog-info">
-                        <div>t-shirt / "v2"</div>
-                        <div style="opacity: 0.5;">tba</div>
-                    </div>
-                </div>
+        <div style="padding: 20px; opacity: 0.5;">mister snich / drop 01</div>
+        <div class="catalog-grid">
+            <div class="catalog-item" onclick="openProduct('zip')">
+                <img src="zip-hoode.jpg">
+                <div style="padding: 10px 0;">zip-hoode / "snich" — 4500 rub</div>
             </div>
         </div>
     </div>
 
-    <div id="product-page" class="page">
+    <div id="product-page" class="page" style="padding: 0;">
         <div class="product-wrapper">
-            <div class="gallery-side" id="p-gallery"></div>
-            <div class="info-side">
-                <div class="back-nav" onclick="showPage('catalog')">← назад к коллекции</div>
+            <div class="gallery" id="p-gallery">
+                </div>
+            
+            <div class="info-panel">
+                <div class="back-link" onclick="showPage('catalog')">← назад</div>
                 <h1 id="p-title"></h1>
                 <div class="price" id="p-price"></div>
-                
-                <div style="font-size: 12px; opacity: 0.5;">размер:</div>
-                <div class="size-btns">
-                    <button class="size-btn" onclick="selSize(this)">baby-size</button>
-                    <button class="size-btn" onclick="selSize(this)">big-size</button>
+
+                <div class="size-box">
+                    <div>размер:</div>
+                    <div class="size-btns">
+                        <button class="size-btn" onclick="setSiz(this)">baby-size</button>
+                        <button class="size-btn" onclick="setSiz(this)">big-size</button>
+                    </div>
                 </div>
 
-                <div class="desc-text" id="p-desc"></div>
-                <button class="buy-btn" onclick="alert('coming soon')">в корзину</button>
+                <div class="desc-content" id="p-desc"></div>
+                
+                <button class="buy-button" onclick="alert('переходим к оформлению...')">купить</button>
             </div>
         </div>
     </div>
@@ -108,14 +122,8 @@
             zip: {
                 title: 'zip-hoode / "snich"',
                 price: '4500 rub',
-                imgs: ['zip-hoode.jpg'],
-                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70\n\n400 rub shipping`
-            },
-            tshirt: {
-                title: 't-shirt / "v2"',
-                price: 'tba',
-                imgs: ['t-shirt-v2.jpg'],
-                desc: `soon\nnew drop\nstay tuned for updates`
+                imgs: ['zip-hoode.jpg', 'zip-hoode.jpg'], // Замени на свои файлы
+                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70`
             }
         };
 
@@ -130,12 +138,14 @@
             $('#p-title').text(p.title);
             $('#p-price').text(p.price);
             $('#p-desc').text(p.desc);
+            
+            // Выводим картинки одну за другой вниз
             $('#p-gallery').html(p.imgs.map(img => `<img src="${img}">`).join(''));
-            $('.size-btn').removeClass('selected');
+            
             showPage('product-page');
         }
 
-        function selSize(btn) {
+        function setSiz(btn) {
             $('.size-btn').removeClass('selected');
             $(btn).addClass('selected');
         }
