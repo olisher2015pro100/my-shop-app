@@ -13,47 +13,67 @@
     <style>
         :root { --bg: #ffffff; --text: #000000; --gray: #f2f2f2; }
         body { font-family: 'Courier New', Courier, monospace; background: var(--bg); color: var(--text); margin: 0; text-transform: lowercase; }
+        
         .page { display: none; padding: 20px; }
         .page.active { display: block; }
         
-        /* Слайдер */
-        .swiper { width: 100%; height: 400px; border-radius: 8px; margin-bottom: 15px; }
+        /* КАТАЛОГ */
+        .catalog-list { display: flex; flex-direction: column; gap: 40px; padding-bottom: 50px; }
+        .catalog-item { cursor: pointer; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .catalog-item img, .soon-box { 
+            width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; background: var(--gray);
+        }
+        .soon-box { display: flex; align-items: center; justify-content: center; opacity: 0.5; }
+
+        /* Слайдер в карточке */
+        .swiper { width: 100%; height: 450px; border-radius: 8px; margin-bottom: 15px; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
-        .swiper-button-next, .swiper-button-prev { color: #000; scale: 0.7; }
+        .swiper-button-next, .swiper-button-prev { color: #000; transform: scale(0.6); }
 
-        /* Формы */
+        /* Формы и кнопки */
         input, textarea, select { 
-            width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; 
-            font-family: inherit; box-sizing: border-box; outline: none;
+            width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; 
+            font-family: inherit; box-sizing: border-box; outline: none; border-radius: 4px;
         }
-        input:invalid { border-color: #ff000055; }
-        
         .btn-black { 
-            width: 100%; background: #000; color: #fff; border: none; padding: 15px; 
-            cursor: pointer; font-family: inherit; margin-top: 10px;
+            width: 100%; background: #000; color: #fff; border: none; padding: 16px; 
+            cursor: pointer; font-family: inherit; font-weight: bold; font-size: 14px;
         }
-        .btn-black:disabled { background: #ccc; cursor: not-allowed; }
-
-        .product-container { display: flex; gap: 20px; flex-wrap: wrap; }
-        .p-left { flex: 1; min-width: 300px; }
-        .p-right { flex: 1; min-width: 300px; }
         
-        .qr-placeholder { border: 2px solid #000; padding: 40px; margin: 20px 0; display: inline-block; }
+        .product-container { display: flex; gap: 30px; flex-wrap: wrap; }
+        .p-left, .p-right { flex: 1; min-width: 300px; }
+        .qr-area { border: 2px dashed #000; padding: 30px; margin: 20px 0; }
     </style>
 </head>
 <body>
 
     <div id="catalog" class="page active">
-        <div style="opacity:0.5; margin-bottom:20px;">items / drop 01</div>
-        <div class="product-card" onclick="openProduct('zip')" style="cursor:pointer">
-            <img src="zip-hoode.jpg" style="width:100%; border-radius:8px;">
-            <div style="margin-top:10px; font-weight:bold;">zip-hoode / "snich"</div>
-            <div>4500 rub</div>
+        <div style="opacity:0.5; margin-bottom:25px; font-size: 14px;">items / drop 01</div>
+        <div class="catalog-list">
+            
+            <div class="catalog-item" onclick="openProduct('zip')">
+                <img src="zip-hoode.jpg" alt="zip-hoodie">
+                <div style="margin-top:15px; font-weight:bold; font-size: 18px;">zip-hoode / "snich"</div>
+                <div style="opacity: 0.7;">4500 rub</div>
+            </div>
+
+            <div class="catalog-item">
+                <div class="soon-box">coming soon</div>
+                <div style="margin-top:15px; font-weight:bold;">t-shirt / "oversize"</div>
+                <div style="opacity: 0.7;">2200 rub</div>
+            </div>
+
+            <div class="catalog-item">
+                <div class="soon-box">coming soon</div>
+                <div style="margin-top:15px; font-weight:bold;">long sleeve / "basic"</div>
+                <div style="opacity: 0.7;">3100 rub</div>
+            </div>
+
         </div>
     </div>
 
     <div id="product-page" class="page">
-        <div onclick="showPage('catalog')" style="margin-bottom:20px; cursor:pointer;">← назад</div>
+        <div onclick="showPage('catalog')" style="margin-bottom:20px; cursor:pointer; opacity: 0.6;">← назад в каталог</div>
         <div class="product-container">
             <div class="p-left">
                 <div class="swiper">
@@ -63,41 +83,45 @@
                 </div>
             </div>
             <div class="p-right">
-                <h1 id="p-title" style="margin:0;"></h1>
-                <div id="p-price" style="font-size:20px; margin:10px 0;"></div>
-                <div id="p-desc" style="font-size:12px; white-space:pre-line; line-height:1.5;"></div>
-                <div style="margin:20px 0;">
-                    <button class="btn-black" onclick="addToCart()">в корзину</button>
+                <h1 id="p-title" style="margin:0; font-size: 24px;"></h1>
+                <div id="p-price" style="font-size:20px; margin:15px 0; font-weight: bold;"></div>
+                <div id="p-desc" style="font-size:13px; white-space:pre-line; line-height:1.6; color: #333;"></div>
+                <div style="margin-top:25px;">
+                    <button class="btn-black" onclick="showPage('checkout-page')">в корзину</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="checkout-page" class="page">
-        <div style="font-size:20px; margin-bottom:20px;">оформление заказа</div>
+        <div onclick="showPage('product-page')" style="margin-bottom:20px; cursor:pointer; opacity: 0.6;">← к описанию</div>
+        <div style="font-size:22px; font-weight:bold; margin-bottom:25px;">оформление</div>
         <form id="order-form">
             <input type="text" id="f_name" placeholder="имя и фамилия" required>
-            <input type="tel" id="f_phone" placeholder="телефон (7900...)" required pattern="[0-9]{10,11}">
-            <input type="email" id="f_email" placeholder="email" required>
-            <input type="text" id="f_city" placeholder="населенный пункт (подсказки dadata)" required>
-            <textarea id="f_addr" placeholder="адрес (улица, дом, кв)" required></textarea>
+            <input type="tel" id="f_phone" placeholder="телефон (79001234567)" required pattern="[0-9]{10,11}">
+            <input type="email" id="f_email" placeholder="ваш email" required>
+            <input type="text" id="f_city" placeholder="населенный пункт (город / поселок)" required>
+            <textarea id="f_addr" rows="3" placeholder="полный адрес (улица, дом, кв)" required></textarea>
             
-            <div style="margin-top:10px; border-top:1px solid #eee; padding-top:15px;">
-                <div style="display:flex; justify-content:space-between;">
+            <div style="margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
+                <div style="display:flex; justify-content:space-between; font-size: 18px;">
                     <span>итого с доставкой:</span>
                     <span id="final-sum" style="font-weight:bold;">4900 rub</span>
                 </div>
             </div>
-            <button type="submit" class="btn-black">перейти к оплате</button>
+            <button type="submit" class="btn-black" style="margin-top:20px;">перейти к оплате</button>
         </form>
     </div>
 
     <div id="pay-page" class="page" style="text-align:center;">
-        <div style="font-size:18px;">оплата по qr-коду</div>
-        <div class="qr-placeholder">
-            <img src="qr_code.jpg" style="max-width:200px;" alt="QR СБП">
+        <div style="font-size:20px; font-weight:bold; margin-bottom:10px;">оплата sbp</div>
+        <div style="font-size:12px; margin-bottom:20px; opacity:0.6;">переведите точную сумму по qr-коду</div>
+        
+        <div class="qr-area">
+            <img src="qr_code.jpg" style="max-width:220px; width:100%;" alt="QR-код для оплаты">
         </div>
-        <div style="font-size:12px; opacity:0.7;">сканируйте qr в приложении банка<br>сумма: <span id="pay-total"></span></div>
+        
+        <div style="font-size:16px; margin: 20px 0;">сумма к оплате: <span id="pay-total" style="font-weight:bold;"></span></div>
         <button class="btn-black" onclick="sendOrder()">я оплатил</button>
     </div>
 
@@ -111,16 +135,15 @@
                 title: 'zip-hoode / "snich"',
                 price: 4500,
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'],
-                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка\nпреордер 2-3 недели\nдоставка 400 rub`
+                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка\n\nbaby size (m-l) длина 65см\nbig size (xl+) длина 70см\n\nпреордер онли\nотшив 2-3 недели\nдоставка сдэк 400 rub`
             }
         };
 
-        // Инициализация Дадаты
+        // Инициализация Дадаты (КЛЮЧ ВСТАВЛЕН)
         $("#f_city").suggestions({
-            token: "ВАШ_API_КЛЮЧ", // СЮДА ВСТАВЬ КЛЮЧ
+            token: "a3e3730b70eb4d2c079c26af9a68a870a9658d62",
             type: "ADDRESS",
-            bounds: "city-settlement",
-            onSelect: function(suggestion) { console.log(suggestion); }
+            bounds: "city-settlement"
         });
 
         function showPage(id) {
@@ -138,17 +161,18 @@
             let slides = p.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join('');
             $('#p-slides').html(slides);
 
-            new Swiper('.swiper', {
-                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-                mousewheel: true,
-                keyboard: true
-            });
+            setTimeout(() => {
+                new Swiper('.swiper', {
+                    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                    mousewheel: true,
+                    keyboard: true,
+                    loop: true
+                });
+            }, 100);
+            
             showPage('product-page');
         }
 
-        function addToCart() { showPage('checkout-page'); }
-
-        // Проверка формы
         $('#order-form').on('submit', function(e) {
             e.preventDefault();
             $('#pay-total').text($('#final-sum').text());
@@ -157,11 +181,13 @@
 
         function sendOrder() {
             const order = {
-                name: $('#f_name').val(),
+                customer: $('#f_name').val(),
                 phone: $('#f_phone').val(),
+                email: $('#f_email').val(),
                 city: $('#f_city').val(),
+                address: $('#f_addr').val(),
                 item: $('#p-title').text(),
-                total: $('#final-sum').text()
+                total: $('#pay-total').text()
             };
             tg.sendData(JSON.stringify(order));
             tg.close();
