@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mister snich</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
@@ -11,260 +11,227 @@
             --bg-color: #ffffff; 
             --text-color: #000000;
             --border-color: #f0f0f0;
-            --secondary-bg: #fafafa;
         }
-
         body.dark-mode {
             --bg-color: #000000;
             --text-color: #ffffff;
             --border-color: #222222;
-            --secondary-bg: #111111;
         }
-
         body { 
-            font-family: var(--main-font); 
-            background: var(--bg-color); 
-            margin: 0; 
-            text-transform: lowercase; 
-            color: var(--text-color); 
-            transition: background 0.3s;
+            font-family: var(--main-font); background: var(--bg-color); color: var(--text-color);
+            margin: 0; text-transform: lowercase; transition: background 0.3s; overflow-x: hidden;
         }
 
+        /* HEADER */
         header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 15px 20px; 
-            border-bottom: 1px solid var(--border-color); 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 20px; border-bottom: 1px solid var(--border-color); 
         }
-
         .header-right { display: flex; gap: 20px; }
-        .theme-toggle, .cart-trigger { cursor: pointer; text-decoration: underline; font-weight: 600; transition: 0.3s; }
-        .theme-toggle:hover, .cart-trigger:hover { opacity: 0.5; }
+        .nav-link { cursor: pointer; text-decoration: underline; transition: 0.3s; }
+        .nav-link:hover { opacity: 0.5; }
 
         .page { display: none; padding: 20px; }
         .active { display: block !important; }
 
         /* КАТАЛОГ */
-        .catalog-list { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 20px; 
-            max-width: 1000px; 
-            margin: 40px auto; 
+        .catalog-grid { 
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; 
+            max-width: 1000px; margin: 40px auto; 
         }
-
         .product-card { cursor: pointer; transition: 0.3s; }
         .product-card:hover { opacity: 0.7; }
-        .img-wrap { width: 100%; aspect-ratio: 3/4; background: var(--secondary-bg); overflow: hidden; }
-        .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .img-container { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; overflow: hidden; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* ИСПРАВЛЕННЫЙ МАКЕТ ТОВАРА */
-        .product-view { 
-            display: grid; 
-            grid-template-columns: 1.2fr 1fr; 
-            gap: 60px; 
-            max-width: 1100px; 
-            margin: 20px auto; 
-            align-items: start;
+        /* СТРАНИЦА ТОВАРА - ФИКС СЪЕЗДА */
+        .product-layout { 
+            display: flex; gap: 50px; max-width: 1100px; margin: 20px auto; align-items: flex-start; 
         }
+        .product-media { flex: 1.2; max-width: 550px; position: sticky; top: 20px; }
+        .product-info { flex: 1; display: flex; flex-direction: column; }
 
-        .view-left { width: 100%; position: sticky; top: 20px; }
-        .view-right { display: flex; flex-direction: column; }
+        .swiper { width: 100%; max-height: 75vh; }
+        .swiper-slide img { width: 100%; height: auto; display: block; }
 
-        .swiper { width: 100%; aspect-ratio: 3/4; background: var(--secondary-bg); }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
-        .swiper-button-next, .swiper-button-prev { color: var(--text-color) !important; }
-
-        /* КНОПКИ И ВЫБОР */
-        .size-row { display: flex; gap: 10px; margin: 20px 0; }
-        .size-box { 
-            flex: 1; border: 1px solid var(--text-color); padding: 12px; 
-            text-align: center; cursor: pointer; transition: 0.2s; 
+        /* КНОПКИ */
+        .size-selector { display: flex; gap: 10px; margin: 20px 0; }
+        .size-btn { 
+            flex: 1; border: 1px solid var(--text-color); padding: 12px; text-align: center; 
+            cursor: pointer; transition: 0.2s; 
         }
-        .size-box:hover { background: var(--text-color); color: var(--bg-color); opacity: 0.7; }
-        .size-box.selected { background: var(--text-color); color: var(--bg-color); }
+        .size-btn:hover { background: var(--text-color); color: var(--bg-color); opacity: 0.7; }
+        .size-btn.selected { background: var(--text-color); color: var(--bg-color); }
 
-        .buy-btn { 
+        .action-btn { 
             width: 100%; background: var(--text-color); color: var(--bg-color); 
-            border: none; padding: 20px; cursor: pointer; font-family: inherit; 
-            font-weight: 600; transition: 0.3s; 
+            border: none; padding: 20px; cursor: pointer; font-family: inherit; transition: 0.3s; 
         }
-        .buy-btn:hover { opacity: 0.8; }
+        .action-btn:hover { opacity: 0.8; }
 
         /* КОРЗИНА */
-        #cart-drawer { 
-            position: fixed; top: 0; right: -100%; width: 400px; height: 100%; 
-            background: var(--bg-color); z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        #cart-panel { 
+            position: fixed; top: 0; right: -100%; width: 380px; height: 100%; 
+            background: var(--bg-color); z-index: 2000; transition: 0.4s; 
             display: flex; flex-direction: column; border-left: 1px solid var(--border-color);
         }
-        #cart-drawer.open { right: 0; }
+        #cart-panel.open { right: 0; }
+        .qty-wrap { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
         .qty-btn { 
-            cursor: pointer; border: 1px solid var(--text-color); width: 28px; height: 28px; 
-            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+            width: 26px; height: 26px; border: 1px solid var(--text-color); 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
         }
         .qty-btn:hover { background: var(--text-color); color: var(--bg-color); }
 
-        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1999; display: none; }
+        #mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1999; display: none; }
 
-        @media (max-width: 800px) {
-            .product-view { grid-template-columns: 1fr; gap: 30px; }
-            .view-left { position: relative; top: 0; }
-            .catalog-list { grid-template-columns: 1fr; }
-            #cart-drawer { width: 100%; }
+        @media (max-width: 850px) {
+            .product-layout { flex-direction: column; }
+            .product-media { position: relative; max-width: 100%; }
+            .catalog-grid { grid-template-columns: 1fr; }
+            #cart-panel { width: 100%; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div style="font-size: 11px; opacity: 0.5;">mister snich / drop 01</div>
+        <div style="opacity: 0.5; font-size: 11px;">mister snich / drop 01</div>
         <div class="header-right">
-            <div class="theme-toggle" onclick="toggleTheme()">тема</div>
-            <div class="cart-trigger" onclick="toggleCart(true)">корзина (<span id="cart-count">0</span>)</div>
+            <div class="nav-link" onclick="document.body.classList.toggle('dark-mode')">тема</div>
+            <div class="nav-link" onclick="toggleCart(true)">корзина (<span id="count">0</span>)</div>
         </div>
     </header>
 
-    <div id="catalog-page" class="page active">
-        <div class="catalog-list">
-            <div class="product-card" onclick="openProduct('zip')">
-                <div class="img-wrap"><img src="zip-hoode.jpg"></div>
-                <div style="margin-top:15px; font-weight: 600;">zip-hoode / "snich"</div>
+    <div id="home" class="page active">
+        <div class="catalog-grid">
+            <div class="product-card" onclick="loadItem('zip')">
+                <div class="img-container"><img src="zip-hoode.jpg"></div>
+                <div style="margin-top:15px; font-weight:600;">zip-hoode / "snich"</div>
                 <div>4500 rub</div>
             </div>
-            <div class="product-card" style="cursor: default; opacity: 0.4;">
-                <div class="img-wrap" style="display:flex; align-items:center; justify-content:center; font-weight:600;">soon</div>
-                <div style="margin-top:15px; font-weight: 600;">t-shirt / "snich"</div>
+            <div class="product-card" style="cursor:default; opacity:0.4;">
+                <div class="img-container" style="display:flex; align-items:center; justify-content:center; font-weight:600;">soon</div>
+                <div style="margin-top:15px; font-weight:600;">t-shirt / "snich"</div>
                 <div>???? rub</div>
             </div>
         </div>
     </div>
 
-    <div id="item-page" class="page">
-        <div onclick="showPage('catalog-page')" style="cursor:pointer; opacity:0.5; margin-bottom:20px; display:inline-block;">← назад</div>
-        <div class="product-view">
-            <div class="view-left">
+    <div id="product" class="page">
+        <div onclick="showPage('home')" style="cursor:pointer; opacity:0.5; margin-bottom:20px;">← назад</div>
+        <div class="product-layout">
+            <div class="product-media">
                 <div class="swiper mySwiper">
-                    <div class="swiper-wrapper" id="slider-wrapper"></div>
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-wrapper" id="slides"></div>
+                    <div class="swiper-button-next" style="color:var(--text-color)"></div>
+                    <div class="swiper-button-prev" style="color:var(--text-color)"></div>
                 </div>
             </div>
-            <div class="view-right">
-                <h1 id="item-title" style="margin:0; font-size:24px;"></h1>
-                <div id="item-price" style="font-size:18px; margin:10px 0 20px; font-weight:600;"></div>
-                <div id="item-desc" style="font-size:13px; line-height:1.6; white-space:pre-line; margin-bottom:30px;"></div>
-                
-                <div style="font-size:11px; opacity:0.5;">выберите размер:</div>
-                <div class="size-row">
-                    <div class="size-box" onclick="selectSize(this)">baby-size</div>
-                    <div class="size-box" onclick="selectSize(this)">big-size</div>
+            <div class="product-info">
+                <h1 id="p-title" style="margin:0; font-size:24px;"></h1>
+                <div id="p-price" style="font-size:18px; margin:10px 0 25px; font-weight:600;"></div>
+                <div id="p-desc" style="font-size:13px; line-height:1.6; white-space:pre-line; margin-bottom:30px;"></div>
+                <div class="size-selector">
+                    <div class="size-btn" onclick="setSize(this)">baby-size</div>
+                    <div class="size-btn" onclick="setSize(this)">big-size</div>
                 </div>
-                <button class="buy-btn" onclick="addToCart()">в корзину</button>
+                <button class="action-btn" onclick="add()">в корзину</button>
             </div>
         </div>
     </div>
 
-    <div id="overlay" onclick="toggleCart(false)"></div>
-    <div id="cart-drawer">
+    <div id="mask" onclick="toggleCart(false)"></div>
+    <div id="cart-panel">
         <div style="padding:25px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
             <span style="font-weight:600;">корзина</span>
             <span style="cursor:pointer;" onclick="toggleCart(false)">✕</span>
         </div>
-        <div id="cart-items-list" style="flex:1; overflow-y:auto; padding:25px;"></div>
+        <div id="cart-content" style="flex:1; overflow-y:auto; padding:25px;"></div>
         <div style="padding:25px; border-top:1px solid var(--border-color);">
             <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:600;">
-                <span>итого</span>
-                <span id="cart-total">0 rub</span>
+                <span>итого</span><span id="total">0 rub</span>
             </div>
-            <button class="buy-btn" onclick="alert('переход к оплате...')">оформить заказ</button>
+            <button class="action-btn">оформить</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        let mySwiper = null;
         let cart = [];
-        let currentItem = null;
+        let cur = null;
+        let swiper = null;
 
-        const db = {
+        const data = {
             zip: {
-                id: 'zip',
                 title: 'zip-hoode / "snich"',
                 price: 4500,
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
-                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка\n\nbaby size (m-l) 65/75см\nbig size (xl+) 70/80см`
+                desc: `new drop\nоверсайз крой\nткань: футер 3-х нитка\n\nbaby-size: 65/75см\nbig-size: 70/80см`
             }
         };
 
-        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             window.scrollTo(0,0);
         }
 
-        function openProduct(id) {
-            const data = db[id];
-            currentItem = data;
-            document.getElementById('item-title').innerText = data.title;
-            document.getElementById('item-price').innerText = data.price + ' rub';
-            document.getElementById('item-desc').innerText = data.desc;
-            document.getElementById('slider-wrapper').innerHTML = data.imgs.map(src => `<div class="swiper-slide"><img src="${src}"></div>`).join('');
-            showPage('item-page');
-            if (mySwiper) mySwiper.destroy(true, true);
-            mySwiper = new Swiper(".mySwiper", {
-                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-            });
+        function loadItem(id) {
+            cur = data[id];
+            document.getElementById('p-title').innerText = cur.title;
+            document.getElementById('p-price').innerText = cur.price + ' rub';
+            document.getElementById('p-desc').innerText = cur.desc;
+            document.getElementById('slides').innerHTML = cur.imgs.map(s => `<div class="swiper-slide"><img src="${s}"></div>`).join('');
+            showPage('product');
+            if(swiper) swiper.destroy();
+            swiper = new Swiper(".mySwiper", { navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" } });
         }
 
-        function selectSize(el) {
-            document.querySelectorAll('.size-box').forEach(b => b.classList.remove('selected'));
+        function setSize(el) {
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
         }
 
         function toggleCart(open) {
-            document.getElementById('cart-drawer').classList.toggle('open', open);
-            document.getElementById('overlay').style.display = open ? 'block' : 'none';
+            document.getElementById('cart-panel').classList.toggle('open', open);
+            document.getElementById('mask').style.display = open ? 'block' : 'none';
         }
 
-        function addToCart() {
-            const sizeEl = document.querySelector('.size-box.selected');
-            if (!sizeEl) return alert('выберите размер');
-            const size = sizeEl.innerText;
-            const existing = cart.find(i => i.id === currentItem.id && i.size === size);
-            if (existing) { existing.qty++; } else { cart.push({ ...currentItem, size: size, qty: 1 }); }
-            updateCartUI();
+        function add() {
+            const s = document.querySelector('.size-btn.selected');
+            if(!s) return alert('выберите размер');
+            const exist = cart.find(i => i.size === s.innerText);
+            if(exist) exist.qty++; else cart.push({ ...cur, size: s.innerText, qty: 1 });
+            renderCart();
             toggleCart(true);
         }
 
-        function updateQty(idx, delta) {
-            cart[idx].qty += delta;
-            if (cart[idx].qty < 1) cart.splice(idx, 1);
-            updateCartUI();
+        function changeQty(idx, d) {
+            cart[idx].qty += d;
+            if(cart[idx].qty < 1) cart.splice(idx, 1);
+            renderCart();
         }
 
-        function updateCartUI() {
-            const list = document.getElementById('cart-items-list');
-            const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            document.getElementById('cart-count').innerText = cart.reduce((sum, i) => sum + i.qty, 0);
-            document.getElementById('cart-total').innerText = total + ' rub';
-
-            if (cart.length === 0) { list.innerHTML = '<div style="opacity:0.3; text-align:center;">пусто</div>'; return; }
-            list.innerHTML = cart.map((item, idx) => `
-                <div style="display:flex; gap:15px; margin-bottom:25px;">
-                    <img src="${item.imgs[0]}" style="width:70px; height:90px; object-fit:cover;">
-                    <div style="font-size:12px; flex:1;">
+        function renderCart() {
+            const list = document.getElementById('cart-content');
+            const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+            document.getElementById('count').innerText = cart.length;
+            document.getElementById('total').innerText = total + ' rub';
+            if(cart.length === 0) { list.innerHTML = '<div style="opacity:0.3;text-align:center;">пусто</div>'; return; }
+            list.innerHTML = cart.map((item, i) => `
+                <div style="display:flex; gap:15px; margin-bottom:20px;">
+                    <img src="${item.imgs[0]}" style="width:60px; height:80px; object-fit:cover;">
+                    <div style="flex:1; font-size:12px;">
                         <div style="font-weight:600;">${item.title}</div>
                         <div style="opacity:0.6;">размер: ${item.size}</div>
-                        <div style="font-weight:600; margin-top:5px;">${item.price * item.qty} rub</div>
-                        <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
-                            <div class="qty-btn" onclick="updateQty(${idx}, -1)">-</div>
+                        <div class="qty-wrap">
+                            <div class="qty-btn" onclick="changeQty(${i},-1)">-</div>
                             <span>${item.qty}</span>
-                            <div class="qty-btn" onclick="updateQty(${idx}, 1)">+</div>
+                            <div class="qty-btn" onclick="changeQty(${i},1)">+</div>
                         </div>
                     </div>
-                    <div onclick="updateQty(${idx}, -999)" style="cursor:pointer; opacity:0.3;">✕</div>
+                    <div style="font-weight:600;">${item.price * item.qty}</div>
                 </div>
             `).join('');
         }
