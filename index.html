@@ -6,6 +6,7 @@
     <title>mister snich</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css" rel="stylesheet" />
     <style>
         :root { 
             --bg: #000000; 
@@ -22,76 +23,57 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ШАПКА КАК В ПРИЛОЖЕНИИ */
         header { 
             padding: 20px; text-align: center; border-bottom: 1px solid #111;
             position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100;
         }
         .logo { font-size: 14px; letter-spacing: 3px; text-transform: uppercase; font-weight: 900; }
 
-        /* КАТАЛОГ: ОДНА КОЛОНКА, КРУПНО */
         .catalog { padding: 15px; display: flex; flex-direction: column; gap: 25px; }
-        
-        .product-card { 
-            background: var(--card-bg); border-radius: 25px; overflow: hidden; 
-            border: 1px solid #1a1a1a; transition: transform 0.2s;
-        }
-        .product-card:active { transform: scale(0.98); }
+        .product-card { background: var(--card-bg); border-radius: 25px; overflow: hidden; border: 1px solid #1a1a1a; }
         .product-card img { width: 100%; display: block; aspect-ratio: 3/4; object-fit: cover; }
-        
-        .product-details { padding: 20px; text-align: left; }
-        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .product-price { font-size: 16px; color: var(--muted); }
+        .product-details { padding: 20px; }
+        .product-name { font-size: 18px; font-weight: 700; }
 
-        /* СТРАНИЦА ТОВАРА */
         .page { display: none; min-height: 100vh; background: var(--bg); padding-bottom: 40px; }
-        .page.active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .page.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .back-btn { padding: 20px; color: var(--muted); font-size: 14px; cursor: pointer; }
-        
         .swiper { width: 100%; aspect-ratio: 3/4; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
         .info-block { padding: 25px; }
-        .info-title { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
-        .info-price { font-size: 20px; color: var(--muted); margin-bottom: 25px; }
-        .info-desc { font-size: 14px; line-height: 1.6; color: #ccc; margin-bottom: 30px; white-space: pre-line; }
+        /* ЖИРНОЕ ОПИСАНИЕ */
+        .info-desc { 
+            font-size: 15px; 
+            line-height: 1.6; 
+            font-weight: 700; 
+            color: #fff; 
+            margin-bottom: 30px; 
+            white-space: pre-line; 
+            background: #111;
+            padding: 15px;
+            border-radius: 12px;
+        }
 
-        /* КНОПКИ И ВЫБОР РАЗМЕРА */
         .size-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
-        .size-item { 
-            padding: 15px; border: 1px solid #333; border-radius: 12px; text-align: center; 
-            font-size: 14px; font-weight: 600; transition: 0.2s;
-        }
-        .size-item.selected { background: var(--accent); color: #000; border-color: var(--accent); }
+        .size-item { padding: 15px; border: 1px solid #333; border-radius: 12px; text-align: center; font-weight: 600; }
+        .size-item.selected { background: var(--accent); color: #000; }
 
-        .main-button { 
-            background: var(--accent); color: #000; border: none; padding: 20px; 
-            border-radius: 18px; width: 100%; font-size: 16px; font-weight: 800; 
-            text-transform: uppercase; cursor: pointer;
-        }
+        .main-button { background: var(--accent); color: #000; border: none; padding: 20px; border-radius: 18px; width: 100%; font-size: 16px; font-weight: 800; text-transform: uppercase; }
 
-        /* КОРЗИНА И ОФОРМЛЕНИЕ */
-        input { 
-            width: 100%; background: #111; border: 1px solid #222; padding: 18px; 
-            border-radius: 15px; color: #fff; margin-bottom: 15px; font-size: 16px; box-sizing: border-box;
-        }
-        input:focus { border-color: var(--accent); outline: none; }
+        /* DADATA DARK THEME */
+        .suggestions-suggestions { background: #111 !important; color: #fff !important; border: 1px solid #333 !important; }
+        .suggestions-suggestion:hover { background: #222 !important; }
+        .suggestions-promo { display: none !important; }
 
-        .floating-cart {
-            position: fixed; bottom: 20px; right: 20px; left: 20px; 
-            background: var(--accent); color: #000; padding: 18px; border-radius: 20px;
-            text-align: center; font-weight: 800; display: none; z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        input { width: 100%; background: #111; border: 1px solid #222; padding: 18px; border-radius: 15px; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">mister snich / drop 01</div>
-    </header>
+    <header><div class="logo">mister snich</div></header>
 
     <div id="home" class="page active">
         <div class="catalog">
@@ -99,60 +81,46 @@
                 <img src="zip-hoode.jpg">
                 <div class="product-details">
                     <div class="product-name">zip-hoode / "snich"</div>
-                    <div class="product-price">4500 rub</div>
-                </div>
-            </div>
-            <div class="product-card" style="opacity: 0.5;">
-                <div style="aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; background:#111; font-size:30px; font-weight:900;">SOON</div>
-                <div class="product-details">
-                    <div class="product-name">t-shirt / "snich"</div>
-                    <div class="product-price">???? rub</div>
+                    <div style="color:var(--muted)">4500 rub</div>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="product" class="page">
-        <div class="back-btn" onclick="showPage('home')">← НАЗАД В КАТАЛОГ</div>
-        <div class="swiper mySwiper">
-            <div class="swiper-wrapper" id="slides"></div>
-        </div>
+        <div class="back-btn" onclick="showPage('home')">← НАЗАД</div>
+        <div class="swiper mySwiper"><div class="swiper-wrapper" id="slides"></div></div>
         <div class="info-block">
-            <div class="info-title" id="p-title"></div>
-            <div class="info-price" id="p-price"></div>
+            <div style="font-size: 24px; font-weight: 800; margin-bottom: 10px;" id="p-title"></div>
+            <div style="font-size: 20px; color: var(--muted); margin-bottom: 20px;" id="p-price"></div>
             <div class="info-desc" id="p-desc"></div>
-            
-            <div style="margin-bottom: 10px; font-weight: 700;">РАЗМЕР:</div>
             <div class="size-grid">
                 <div class="size-item" onclick="selectSize(this)">baby-size</div>
                 <div class="size-item" onclick="selectSize(this)">big-size</div>
             </div>
-            
-            <button class="main-button" onclick="goToCheckout()">КУПИТЬ СЕЙЧАС</button>
+            <button class="main-button" onclick="showPage('checkout')">КУПИТЬ</button>
         </div>
     </div>
 
     <div id="checkout" class="page">
         <div class="back-btn" onclick="showPage('product')">← НАЗАД</div>
         <div class="info-block">
-            <div class="info-title">ДОСТАВКА</div>
-            <p style="color: var(--muted); margin-bottom: 30px;">заполни данные для отправки заказа</p>
-            
+            <div style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">ДОСТАВКА</div>
             <input type="text" id="name" placeholder="ФИО">
             <input type="text" id="address" placeholder="ГОРОД И АДРЕС">
-            <input type="text" id="postal" placeholder="ПОЧТОВЫЙ ИНДЕКС">
-            <input type="text" id="tg_user" placeholder="TELEGRAM @">
-            
-            <button class="main-button" style="margin-top: 20px;" onclick="confirmOrder()">ПОДТВЕРДИТЬ И ОПЛАТИТЬ</button>
+            <input type="text" id="postal" placeholder="ПОЧТОВЫЙ ИНДЕКС" readonly>
+            <input type="text" id="tg_user" placeholder="ДЛЯ СВЯЗИ С ПРОДАВЦОМ НАПИШИТЕ КОНТАКТЫ (@)">
+            <button class="main-button" onclick="confirmOrder()">ОФОРМИТЬ</button>
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
+
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.headerColor = "#000000";
-
         let selectedSize = null;
         let currentItem = null;
 
@@ -161,60 +129,56 @@
                 title: 'zip-hoode / "snich"',
                 price: '4500 rub',
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg'],
-                desc: 'new drop\оверсайз крой\ткань:футер 3-х нитка /кружево / кулирная гладь / сетка\(кружево и кулирная гладь на заклепках, по желанию их можно снять)\машинная вышивка и нашивки тканью\baby size (m-l) длина 65см спереди 75см сзади / ширина 65\ig size (xl+) длина 70см спереди 80см сзади / ширина 70'
+                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70'
             }
         };
 
+        // ВОЗВРАТ DADATA
+        $("#address").suggestions({
+            token: "1ed0eebc35156fe4fe197c5dd676354f40bfd073",
+            type: "ADDRESS",
+            onSelect: function(s) { if(s.data.postal_code) $("#postal").val(s.data.postal_code); }
+        });
+
         function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            $(".page").removeClass("active");
+            $("#" + id).addClass("active");
             window.scrollTo(0,0);
         }
 
         function openProduct(id) {
             currentItem = data[id];
-            document.getElementById('p-title').innerText = currentItem.title;
-            document.getElementById('p-price').innerText = currentItem.price;
-            document.getElementById('p-desc').innerText = currentItem.desc;
-            
-            const wrapper = document.getElementById('slides');
-            wrapper.innerHTML = currentItem.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join('');
-            
+            $("#p-title").text(currentItem.title);
+            $("#p-price").text(currentItem.price);
+            $("#p-desc").text(currentItem.desc);
+            $("#slides").html(currentItem.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join(''));
             new Swiper(".mySwiper", { loop: true });
             showPage('product');
         }
 
         function selectSize(el) {
-            document.querySelectorAll('.size-item').forEach(s => s.classList.remove('selected'));
-            el.classList.add('selected');
+            $(".size-item").removeClass("selected");
+            $(el).addClass("selected");
             selectedSize = el.innerText;
         }
 
-        function goToCheckout() {
-            if(!selectedSize) return alert('ВЫБЕРИ РАЗМЕР!');
-            showPage('checkout');
-        }
-
         function confirmOrder() {
-            const name = document.getElementById('name').value;
-            const addr = document.getElementById('address').value;
-            const user = document.getElementById('tg_user').value;
-
-            if(!name || !addr || !user) return alert('ЗАПОЛНИ ВСЕ ПОЛЯ!');
+            const name = $("#name").val();
+            const addr = $("#address").val();
+            const contact = $("#tg_user").val();
+            if(!name || !addr || !contact) return alert('ЗАПОЛНИ ДАННЫЕ!');
 
             const order = {
                 item: currentItem.title + " [" + selectedSize + "]",
                 price: currentItem.price,
                 customer: name,
                 address: addr,
-                zip: document.getElementById('postal').value,
-                contact: user
+                zip: $("#postal").val(),
+                contact: contact
             };
-
             tg.sendData(JSON.stringify(order));
             tg.close();
         }
     </script>
 </body>
 </html>
-
