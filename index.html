@@ -2,292 +2,216 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>mister snich</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css" rel="stylesheet" />
     <style>
         :root { 
-            --main-font: 'Courier New', monospace; 
-            --bg-color: #ffffff; 
-            --text-color: #000000;
-            --border-color: #f0f0f0;
-        }
-        body.dark-mode {
-            --bg-color: #000000;
-            --text-color: #ffffff;
-            --border-color: #222222;
+            --bg: #000000; 
+            --card-bg: #0a0a0a;
+            --text: #ffffff;
+            --accent: #ffffff;
+            --muted: #888888;
         }
 
         body { 
-            font-family: var(--main-font); background: var(--bg-color); color: var(--text-color);
-            margin: 0; text-transform: lowercase; transition: background 0.3s; overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); color: var(--text);
+            margin: 0; padding: 0; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* ШАПКА КАК В ПРИЛОЖЕНИИ */
         header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 20px; border-bottom: 1px solid var(--border-color);
-            position: sticky; top: 0; background: var(--bg-color); z-index: 1000;
+            padding: 20px; text-align: center; border-bottom: 1px solid #111;
+            position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100;
         }
+        .logo { font-size: 14px; letter-spacing: 3px; text-transform: uppercase; font-weight: 900; }
+
+        /* КАТАЛОГ: ОДНА КОЛОНКА, КРУПНО */
+        .catalog { padding: 15px; display: flex; flex-direction: column; gap: 25px; }
         
-        .header-right { display: flex; gap: 20px; align-items: center; }
-        .nav-link { cursor: pointer; text-decoration: underline; white-space: nowrap; }
-
-        .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
-        .active { display: block !important; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* DADATA STYLES */
-        .suggestions-suggestions {
-            background: var(--bg-color) !important;
-            color: var(--text-color) !important;
-            border: 1px solid var(--border-color) !important;
-            font-family: var(--main-font) !important;
+        .product-card { 
+            background: var(--card-bg); border-radius: 25px; overflow: hidden; 
+            border: 1px solid #1a1a1a; transition: transform 0.2s;
         }
-        .suggestions-suggestion:hover { background: var(--border-color) !important; }
-        .suggestions-promo { display: none !important; }
-        .suggestions-addon { display: none !important; }
+        .product-card:active { transform: scale(0.98); }
+        .product-card img { width: 100%; display: block; aspect-ratio: 3/4; object-fit: cover; }
+        
+        .product-details { padding: 20px; text-align: left; }
+        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+        .product-price { font-size: 16px; color: var(--muted); }
 
-        /* КАТАЛОГ */
-        .catalog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; max-width: 1000px; margin: 40px auto; }
-        .product-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; cursor: pointer; }
+        /* СТРАНИЦА ТОВАРА */
+        .page { display: none; min-height: 100vh; background: var(--bg); padding-bottom: 40px; }
+        .page.active { display: block; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* ТОВАР */
-        .product-layout { display: flex; gap: 40px; max-width: 1000px; margin: 0 auto; align-items: flex-start; }
-        .product-media { flex: 1.2; max-width: 500px; width: 100%; }
-        .product-info { flex: 1; display: flex; flex-direction: column; }
-
-        .swiper { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; }
+        .back-btn { padding: 20px; color: var(--muted); font-size: 14px; cursor: pointer; }
+        
+        .swiper { width: 100%; aspect-ratio: 3/4; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        .size-selector { display: flex; gap: 10px; margin: 20px 0; }
-        .size-btn { 
-            flex: 1; border: 1px solid var(--text-color); padding: 12px; text-align: center; 
-            cursor: pointer; transition: 0.2s; font-size: 13px; background: transparent; color: var(--text-color);
-        }
-        .size-btn:hover { background: var(--text-color); color: var(--bg-color); opacity: 0.8; }
-        .size-btn.selected { background: var(--text-color); color: var(--bg-color); }
+        .info-block { padding: 25px; }
+        .info-title { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
+        .info-price { font-size: 20px; color: var(--muted); margin-bottom: 25px; }
+        .info-desc { font-size: 14px; line-height: 1.6; color: #ccc; margin-bottom: 30px; white-space: pre-line; }
 
-        .action-btn { 
-            width: 100%; background: var(--text-color); color: var(--bg-color); 
-            border: none; padding: 20px; cursor: pointer; font-family: inherit; 
-            font-size: 16px; font-weight: 600; transition: 0.3s;
+        /* КНОПКИ И ВЫБОР РАЗМЕРА */
+        .size-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
+        .size-item { 
+            padding: 15px; border: 1px solid #333; border-radius: 12px; text-align: center; 
+            font-size: 14px; font-weight: 600; transition: 0.2s;
         }
-        .action-btn:hover { opacity: 0.7; }
+        .size-item.selected { background: var(--accent); color: #000; border-color: var(--accent); }
 
-        input {
-            width: 100%; padding: 15px; margin-bottom: 15px; box-sizing: border-box;
-            background: transparent; border: 1px solid var(--text-color);
-            color: var(--text-color); font-family: inherit; outline: none;
+        .main-button { 
+            background: var(--accent); color: #000; border: none; padding: 20px; 
+            border-radius: 18px; width: 100%; font-size: 16px; font-weight: 800; 
+            text-transform: uppercase; cursor: pointer;
         }
-        input:read-only { opacity: 0.5; }
 
-        #cart-panel { 
-            position: fixed; top: 0; right: -100%; width: 350px; height: 100%; 
-            background: var(--bg-color); z-index: 2000; transition: 0.4s; 
-            display: flex; flex-direction: column; border-left: 1px solid var(--border-color);
+        /* КОРЗИНА И ОФОРМЛЕНИЕ */
+        input { 
+            width: 100%; background: #111; border: 1px solid #222; padding: 18px; 
+            border-radius: 15px; color: #fff; margin-bottom: 15px; font-size: 16px; box-sizing: border-box;
         }
-        #cart-panel.open { right: 0; }
-        #mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1999; display: none; }
+        input:focus { border-color: var(--accent); outline: none; }
 
-        @media (max-width: 768px) {
-            .catalog-grid { grid-template-columns: 1fr; }
-            .product-layout { flex-direction: column; }
+        .floating-cart {
+            position: fixed; bottom: 20px; right: 20px; left: 20px; 
+            background: var(--accent); color: #000; padding: 18px; border-radius: 20px;
+            text-align: center; font-weight: 800; display: none; z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
     </style>
 </head>
-<body class="dark-mode"> <header>
-        <div style="opacity: 0.5; font-size: 11px;">mister snich / drop 01</div>
-        <div class="header-right">
-            <div class="nav-link" onclick="document.body.classList.toggle('dark-mode')">тема</div>
-            <div class="nav-link" onclick="toggleCart(true)">корзина (<span id="count">0</span>)</div>
-        </div>
+<body>
+
+    <header>
+        <div class="logo">mister snich / drop 01</div>
     </header>
 
     <div id="home" class="page active">
-        <div class="catalog-grid">
-            <div class="product-card" onclick="loadItem('zip')">
+        <div class="catalog">
+            <div class="product-card" onclick="openProduct('zip')">
                 <img src="zip-hoode.jpg">
-                <div style="margin-top:15px; font-weight:600;">zip-hoode / "snich"</div>
-                <div>4500 rub</div>
+                <div class="product-details">
+                    <div class="product-name">zip-hoode / "snich"</div>
+                    <div class="product-price">4500 rub</div>
+                </div>
             </div>
-            <div class="product-card">
-                <div style="width:100%; aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:24px; background: rgba(128,128,128,0.1);">soon</div>
-                <div style="margin-top:15px; font-weight:600; opacity: 0.4;">t-shirt / "snich"</div>
-                <div style="opacity: 0.4;">???? rub</div>
+            <div class="product-card" style="opacity: 0.5;">
+                <div style="aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; background:#111; font-size:30px; font-weight:900;">SOON</div>
+                <div class="product-details">
+                    <div class="product-name">t-shirt / "snich"</div>
+                    <div class="product-price">???? rub</div>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="product" class="page">
-        <div onclick="showPage('home')" style="cursor:pointer; opacity:0.5; margin-bottom:20px;">← назад</div>
-        <div class="product-layout">
-            <div class="product-media">
-                <div class="swiper mySwiper">
-                    <div class="swiper-wrapper" id="slides"></div>
-                    <div class="swiper-button-next" style="color:var(--text-color)"></div>
-                    <div class="swiper-button-prev" style="color:var(--text-color)"></div>
-                </div>
+        <div class="back-btn" onclick="showPage('home')">← НАЗАД В КАТАЛОГ</div>
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper" id="slides"></div>
+        </div>
+        <div class="info-block">
+            <div class="info-title" id="p-title"></div>
+            <div class="info-price" id="p-price"></div>
+            <div class="info-desc" id="p-desc"></div>
+            
+            <div style="margin-bottom: 10px; font-weight: 700;">РАЗМЕР:</div>
+            <div class="size-grid">
+                <div class="size-item" onclick="selectSize(this)">baby-size</div>
+                <div class="size-item" onclick="selectSize(this)">big-size</div>
             </div>
-            <div class="product-info">
-                <h1 id="p-title" style="margin:0 0 10px 0;"></h1>
-                <div id="p-price" style="font-size:20px; font-weight:600; margin-bottom:20px;"></div>
-                <div id="p-desc" style="white-space: pre-line; font-size:13px; line-height:1.6; margin-bottom:30px;"></div>
-                <div style="font-size: 12px; margin-bottom: 10px; opacity: 0.6;">выберите размер:</div>
-                <div class="size-selector">
-                    <div class="size-btn" onclick="selectSize(this)">baby-size</div>
-                    <div class="size-btn" onclick="selectSize(this)">big-size</div>
-                </div>
-                <button class="action-btn" onclick="addToCart()">в корзину</button>
-            </div>
+            
+            <button class="main-button" onclick="goToCheckout()">КУПИТЬ СЕЙЧАС</button>
         </div>
     </div>
 
     <div id="checkout" class="page">
-        <div onclick="showPage('home')" style="cursor:pointer; opacity:0.5; margin-bottom:20px;">← назад</div>
-        <div style="max-width: 450px; margin: 40px auto;">
-            <h2 style="margin-bottom:30px;">оформление заказа</h2>
-            <input type="text" id="name" placeholder="фио">
-            <input type="text" id="address" placeholder="город / адрес">
-            <input type="text" id="postal_code" placeholder="почтовый индекс" readonly>
-            <input type="text" id="tg_contact" placeholder="telegram (@)">
-            <button class="action-btn" style="margin-top:10px;" onclick="finishOrder()">подтвердить заказ</button>
+        <div class="back-btn" onclick="showPage('product')">← НАЗАД</div>
+        <div class="info-block">
+            <div class="info-title">ДОСТАВКА</div>
+            <p style="color: var(--muted); margin-bottom: 30px;">заполни данные для отправки заказа</p>
+            
+            <input type="text" id="name" placeholder="ФИО">
+            <input type="text" id="address" placeholder="ГОРОД И АДРЕС">
+            <input type="text" id="postal" placeholder="ПОЧТОВЫЙ ИНДЕКС">
+            <input type="text" id="tg_user" placeholder="TELEGRAM @">
+            
+            <button class="main-button" style="margin-top: 20px;" onclick="confirmOrder()">ПОДТВЕРДИТЬ И ОПЛАТИТЬ</button>
         </div>
     </div>
 
-    <div id="mask" onclick="toggleCart(false)"></div>
-    <div id="cart-panel">
-        <div style="padding:20px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
-            <span style="font-weight:600;">корзина</span>
-            <span style="cursor:pointer;" onclick="toggleCart(false)">✕</span>
-        </div>
-        <div id="cart-items" style="flex:1; padding:20px; overflow-y:auto;"></div>
-        <div style="padding:20px; border-top:1px solid var(--border-color);">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:600;">
-                <span>итого:</span><span id="total-price">0 rub</span>
-            </div>
-            <button class="action-btn" onclick="startCheckout()">оформить</button>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
-
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); 
+        tg.expand();
+        tg.headerColor = "#000000";
 
-        let cart = [];
-        let curItem = null;
         let selectedSize = null;
-        let swiper = null;
+        let currentItem = null;
 
-        const items = {
+        const data = {
             zip: {
                 title: 'zip-hoode / "snich"',
-                price: 4500,
-                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
-                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка...'
+                price: '4500 rub',
+                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg'],
+                desc: 'оверсайз крой\nткань: футер 3-х нитка\nмашинная вышивка'
             }
         };
 
-        $("#address").suggestions({
-            token: "1ed0eebc35156fe4fe197c5dd676354f40bfd073",
-            type: "ADDRESS",
-            onSelect: function(suggestion) {
-                if (suggestion.data.postal_code) {
-                    $("#postal_code").val(suggestion.data.postal_code);
-                } else {
-                    $("#postal_code").val("").attr("placeholder", "введите индекс вручную").removeAttr("readonly");
-                }
-            }
-        });
-
         function showPage(id) {
-            $(".page").removeClass("active");
-            $("#" + id).addClass("active");
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
             window.scrollTo(0,0);
         }
 
-        function loadItem(id) {
-            curItem = items[id];
-            selectedSize = null;
-            $("#p-title").text(curItem.title);
-            $("#p-price").text(curItem.price + ' rub');
-            $("#p-desc").text(curItem.desc);
-            $("#slides").html(curItem.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join(''));
-            if(swiper) swiper.destroy();
-            swiper = new Swiper(".mySwiper", { navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }, loop: true });
-            $(".size-btn").removeClass("selected");
+        function openProduct(id) {
+            currentItem = data[id];
+            document.getElementById('p-title').innerText = currentItem.title;
+            document.getElementById('p-price').innerText = currentItem.price;
+            document.getElementById('p-desc').innerText = currentItem.desc;
+            
+            const wrapper = document.getElementById('slides');
+            wrapper.innerHTML = currentItem.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join('');
+            
+            new Swiper(".mySwiper", { loop: true });
             showPage('product');
         }
 
         function selectSize(el) {
-            $(".size-btn").removeClass("selected");
-            $(el).addClass("selected");
+            document.querySelectorAll('.size-item').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
             selectedSize = el.innerText;
         }
 
-        function toggleCart(show) {
-            $("#cart-panel").toggleClass("open", show);
-            $("#mask").toggle(show);
-        }
-
-        function addToCart() {
-            if(!selectedSize) return alert('выберите размер');
-            cart.push({...curItem, size: selectedSize});
-            updateCart();
-            toggleCart(true);
-        }
-
-        function updateCart() {
-            let total = cart.reduce((sum, i) => sum + i.price, 0);
-            $("#count").text(cart.length);
-            $("#total-price").text(total + ' rub');
-            if(cart.length === 0) {
-                $("#cart-items").html('<div style="text-align:center; opacity:0.3; margin-top:50px;">пусто</div>');
-                return;
-            }
-            $("#cart-items").html(cart.map((item, i) => `
-                <div style="display:flex; gap:15px; margin-bottom:20px; font-size:12px;">
-                    <img src="${item.imgs[0]}" style="width:60px; height:80px; object-fit:cover;">
-                    <div style="flex:1;">
-                        <div style="font-weight:600;">${item.title}</div>
-                        <div style="opacity:0.6;">размер: ${item.size}</div>
-                        <div style="margin-top:5px; cursor:pointer; text-decoration:underline;" onclick="cart.splice(${i},1); updateCart();">удалить</div>
-                    </div>
-                    <div style="font-weight:600;">${item.price}</div>
-                </div>
-            `).join(''));
-        }
-
-        function startCheckout() {
-            if(cart.length === 0) return alert('корзина пуста');
-            toggleCart(false);
+        function goToCheckout() {
+            if(!selectedSize) return alert('ВЫБЕРИ РАЗМЕР!');
             showPage('checkout');
         }
 
-        function finishOrder() {
-            const name = $("#name").val();
-            const address = $("#address").val();
-            const contact = $("#tg_contact").val();
-            const postal = $("#postal_code").val();
+        function confirmOrder() {
+            const name = document.getElementById('name').value;
+            const addr = document.getElementById('address').value;
+            const user = document.getElementById('tg_user').value;
 
-            if(!name || !address || !contact) return alert('заполни все поля!');
+            if(!name || !addr || !user) return alert('ЗАПОЛНИ ВСЕ ПОЛЯ!');
 
-            let orderData = {
-                item: cart.map(i => `${i.title} (${i.size})`).join(', '),
-                price: cart.reduce((sum, i) => sum + i.price, 0) + ' rub',
+            const order = {
+                item: currentItem.title + " [" + selectedSize + "]",
+                price: currentItem.price,
                 customer: name,
-                address: address,
-                zip: postal,
-                contact: contact
+                address: addr,
+                zip: document.getElementById('postal').value,
+                contact: user
             };
 
-            // ОТПРАВЛЯЕМ БОТУ
-            tg.sendData(JSON.stringify(orderData)); 
+            tg.sendData(JSON.stringify(order));
             tg.close();
         }
     </script>
