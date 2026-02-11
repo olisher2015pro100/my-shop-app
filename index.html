@@ -12,26 +12,13 @@
     <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
 
     <style>
-        /* Глобальные настройки для ПК (Модератора) */
-        html {
-            background-color: #f0f0f0; /* Серый фон вокруг "телефона" на ПК */
-            display: flex;
-            justify-content: center;
-        }
-
+        html { background-color: #f0f0f0; display: flex; justify-content: center; }
         body { 
-            font-family: 'Courier New', monospace; 
-            background: #fff; 
-            margin: 0; 
-            text-transform: lowercase; 
-            width: 100%;
-            max-width: 450px; /* Имитация ширины смартфона */
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1); /* Тень, чтобы сайт выделялся на ПК */
-            position: relative;
+            font-family: 'Courier New', monospace; background: #fff; margin: 0; 
+            text-transform: lowercase; width: 100%; max-width: 450px; 
+            min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; 
         }
 
-        /* Настройки для мобилок: убираем тени и центровку */
         @media screen and (max-width: 450px) {
             html { background-color: #fff; }
             body { max-width: 100%; box-shadow: none; }
@@ -50,36 +37,48 @@
             padding: 18px; border-radius: 8px; font-weight: bold; cursor: pointer; 
             -webkit-appearance: none; margin-top: 10px;
         }
+
+        /* РАЗМЕРЫ */
+        .size-container { display: flex; gap: 10px; margin: 15px 0; }
+        .size-btn { 
+            flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; 
+            background: #fff; cursor: pointer; text-align: center; font-family: inherit;
+        }
+        .size-btn.selected { background: #000; color: #fff; border-color: #000; }
         
+        .catalog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .catalog-item img, .swiper-slide img { 
-            width: 100%; 
-            aspect-ratio: 1/1; 
-            object-fit: cover; 
-            border-radius: 12px; 
-            display: block;
+            width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; display: block;
         }
 
         .swiper { width: 100%; margin-bottom: 20px; position: relative; }
-
         .swiper-button-next, .swiper-button-prev { 
             color: #000 !important; background: rgba(255,255,255,0.6); 
             width: 30px !important; height: 30px !important; border-radius: 50%; 
         }
         .swiper-button-next:after, .swiper-button-prev:after { font-size: 14px !important; font-weight: bold; }
 
-        @media (pointer: coarse) {
-            .swiper-button-next, .swiper-button-prev { display: none !important; }
-        }
+        @media (pointer: coarse) { .swiper-button-next, .swiper-button-prev { display: none !important; } }
     </style>
 </head>
 <body>
 
     <div id="catalog" class="page active">
         <div style="opacity:0.5; margin-bottom:20px;">items / drop 01</div>
-        <div class="catalog-item" onclick="openProduct('zip')" style="cursor: pointer;">
-            <img src="zip-hoode.jpg">
-            <div style="margin-top:12px; font-weight:bold;">zip-hoode / "snich"</div>
-            <div>4500 rub</div>
+        <div class="catalog-grid">
+            <div class="catalog-item" onclick="openProduct('zip')" style="cursor: pointer;">
+                <img src="zip-hoode.jpg">
+                <div style="margin-top:12px; font-weight:bold;">zip-hoode / "snich"</div>
+                <div>4500 rub</div>
+            </div>
+            <div class="catalog-item" style="opacity: 0.5;">
+                <div style="position:relative;">
+                    <img src="t-shirt.jpg" style="filter: grayscale(1);">
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-weight:bold; background:#fff; padding:5px 10px; border-radius:4px;">soon</div>
+                </div>
+                <div style="margin-top:12px; font-weight:bold;">t-shirt / "v2"</div>
+                <div>tba</div>
+            </div>
         </div>
     </div>
 
@@ -92,8 +91,17 @@
         </div>
         <h1 id="p-title" style="font-size:22px; margin:0;"></h1>
         <div id="p-price" style="font-size:20px; font-weight:bold; margin:10px 0;"></div>
+        
+        <div style="margin-top:20px; font-size:12px; font-weight:bold;">выберите размер:</div>
+        <div class="size-container">
+            <div class="size-btn" onclick="selectSize(this)">S</div>
+            <div class="size-btn" onclick="selectSize(this)">M</div>
+            <div class="size-btn" onclick="selectSize(this)">L</div>
+            <div class="size-btn" onclick="selectSize(this)">XL</div>
+        </div>
+
         <div id="p-desc" style="font-size:13px; white-space:pre-line; margin-bottom: 20px; opacity: 0.8;"></div>
-        <button class="btn-black" onclick="showPage('checkout-page')">купить</button>
+        <button class="btn-black" onclick="checkSizeAndGo()">купить</button>
     </div>
 
     <div id="checkout-page" class="page">
@@ -115,9 +123,9 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        let selectedSize = "";
 
         const dToken = "a3e3730b70eb4d2c079c26af9a68a870a9658d62";
-
         $("#f_name").suggestions({ token: dToken, type: "NAME" });
         $("#f_addr").suggestions({
             token: dToken, type: "ADDRESS",
@@ -133,6 +141,20 @@
             }
         };
 
+        function selectSize(el) {
+            $('.size-btn').removeClass('selected');
+            $(el).addClass('selected');
+            selectedSize = $(el).text();
+        }
+
+        function checkSizeAndGo() {
+            if(!selectedSize) {
+                alert("пожалуйста, выберите размер");
+                return;
+            }
+            showPage('checkout-page');
+        }
+
         function showPage(id) {
             $('.page').removeClass('active');
             $('#' + id).addClass('active');
@@ -146,6 +168,8 @@
             $('#p-desc').text(p.desc);
             $('#final-sum').text((p.price + 400) + ' rub');
             $('#p-slides').html(p.imgs.map(i => `<div class="swiper-slide"><img src="${i}"></div>`).join(''));
+            selectedSize = ""; 
+            $('.size-btn').removeClass('selected');
             
             new Swiper('#mySwiper', { 
                 loop: true,
@@ -162,7 +186,7 @@
                 phone: $('#f_phone').val(),
                 address: $('#f_addr').val(),
                 zip: $('#f_zip').val(),
-                item: $('#p-title').text(),
+                item: $('#p-title').text() + " (Размер: " + selectedSize + ")",
                 total: $('#final-sum').text().replace(/[^0-9]/g, '')
             };
             tg.sendData(JSON.stringify(data));
