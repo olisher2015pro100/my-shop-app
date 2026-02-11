@@ -14,18 +14,21 @@
     <style>
         :root { --bg: #ffffff; --text: #000000; --gray: #f7f7f7; }
         body { font-family: 'Courier New', monospace; background: var(--bg); color: var(--text); margin: 0; text-transform: lowercase; overflow-x: hidden; }
-        .page { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
+        
+        /* Исправляем курсор и кликабельность */
+        .page { display: none; padding: 20px; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .catalog-item, .btn-black, .back-btn { cursor: pointer !important; }
         
         .catalog-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; background: var(--gray); }
         .swiper { width: 100%; height: auto; aspect-ratio: 1/1; border-radius: 12px; margin-bottom: 20px; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
         
         input { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #eee; font-family: inherit; box-sizing: border-box; outline: none; border-radius: 8px; background: var(--gray); font-size: 14px; }
-        input:focus { border-color: #000; }
         
-        .btn-black { width: 100%; background: #000; color: #fff; border: none; padding: 18px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 14px; border-radius: 8px; }
+        .btn-black { width: 100%; background: #000; color: #fff; border: none; padding: 18px; font-family: inherit; font-weight: bold; font-size: 14px; border-radius: 8px; -webkit-appearance: none; }
+        
         .suggestions-suggestions { font-family: 'Courier New', monospace !important; text-transform: lowercase; }
     </style>
 </head>
@@ -43,7 +46,7 @@
     </div>
 
     <div id="product-page" class="page">
-        <div onclick="showPage('catalog')" style="margin-bottom:20px; cursor:pointer;">← назад</div>
+        <div class="back-btn" onclick="showPage('catalog')" style="margin-bottom:20px;">← назад</div>
         <div class="swiper"><div class="swiper-wrapper" id="p-slides"></div></div>
         <div class="product-info">
             <h1 id="p-title" style="font-size:22px; margin:0;"></h1>
@@ -54,7 +57,7 @@
     </div>
 
     <div id="checkout-page" class="page">
-        <div onclick="showPage('product-page')" style="margin-bottom:20px; cursor:pointer;">← назад</div>
+        <div class="back-btn" onclick="showPage('product-page')" style="margin-bottom:20px;">← назад</div>
         <div style="font-size:20px; font-weight:bold; margin-bottom:20px;">доставка</div>
         <form id="order-form">
             <input type="text" id="f_name" placeholder="имя и фамилия" required>
@@ -71,55 +74,65 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        let tg = window.Telegram.WebApp;
+        const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Твой токен DaData
-        const token = "a3e3730b70eb4d2c079c26af9a68a870a9658d62";
+        const dToken = "a3e3730b70eb4d2c079c26af9a68a870a9658d62";
 
-        // Настройка подсказок
-        $("#f_name").suggestions({ token: token, type: "NAME" });
+        // DaData Подсказки
+        $("#f_name").suggestions({ token: dToken, type: "NAME" });
         $("#f_addr").suggestions({
-            token: token,
+            token: dToken,
             type: "ADDRESS",
-            onSelect: function(s) { if(s.data.postal_code) $('#f_zip').val(s.data.postal_code); }
+            onSelect: function(s) { 
+                if(s.data.postal_code) $('#f_zip').val(s.data.postal_code); 
+            }
         });
 
         const products = {
-            zip: { title: 'zip-hoode / "snich"', price: 4500, imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'], desc: "drop 01\noversize fit\n400 rub shipping" }
+            zip: { 
+                title: 'zip-hoode / "snich"', 
+                price: 4500, 
+                imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg'], 
+                desc: "drop 01\noversize fit\n400 rub shipping" 
+            }
         };
 
         function showPage(id) { 
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            $('.page').removeClass('active');
+            $('#' + id).addClass('active');
             window.scrollTo(0,0);
         }
 
         function openProduct(id) {
             const p = products[id];
-            document.getElementById('p-title').innerText = p.title;
-            document.getElementById('p-price').innerText = p.price + ' rub';
-            document.getElementById('p-desc').innerText = p.desc;
-            document.getElementById('final-sum').innerText = (p.price + 400) + ' rub';
-            document.getElementById('p-slides').innerHTML = p.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join('');
+            $('#p-title').text(p.title);
+            $('#p-price').text(p.price + ' rub');
+            $('#p-desc').text(p.desc);
+            $('#final-sum').text((p.price + 400) + ' rub');
+            
+            let slides = p.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join('');
+            $('#p-slides').html(slides);
+            
             new Swiper('.swiper', { loop: true });
             showPage('product-page');
         }
 
-        document.getElementById('order-form').onsubmit = function(e) {
+        // Финальная функция отправки
+        $('#order-form').on('submit', function(e) {
             e.preventDefault();
-            const data = {
+            const result = {
                 action: 'create_payment',
-                customer: document.getElementById('f_name').value,
-                phone: document.getElementById('f_phone').value,
-                address: document.getElementById('f_addr').value,
-                zip: document.getElementById('f_zip').value,
-                item: document.getElementById('p-title').innerText,
-                total: document.getElementById('final-sum').innerText.replace(/[^0-9]/g, '')
+                customer: $('#f_name').val(),
+                phone: $('#f_phone').val(),
+                address: $('#f_addr').val(),
+                zip: $('#f_zip').val(),
+                item: $('#p-title').text(),
+                total: $('#final-sum').text().replace(/[^0-9]/g, '')
             };
-            tg.sendData(JSON.stringify(data));
+            tg.sendData(JSON.stringify(result));
             tg.close();
-        };
+        });
     </script>
 </body>
 </html>
