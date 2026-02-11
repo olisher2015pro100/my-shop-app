@@ -2,8 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>mister snich</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css" rel="stylesheet" />
     <style>
@@ -30,7 +31,6 @@
             position: sticky; top: 0; background: var(--bg-color); z-index: 1000;
         }
         
-        /* ТЕМА И КОРЗИНА В ОДНУ СТРОКУ */
         .header-right { display: flex; gap: 20px; align-items: center; }
         .nav-link { cursor: pointer; text-decoration: underline; white-space: nowrap; }
 
@@ -38,7 +38,7 @@
         .active { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ИСПРАВЛЕНИЕ DADATA ПОД ТЕМНУЮ ТЕМУ */
+        /* DADATA STYLES */
         .suggestions-suggestions {
             background: var(--bg-color) !important;
             color: var(--text-color) !important;
@@ -46,7 +46,7 @@
             font-family: var(--main-font) !important;
         }
         .suggestions-suggestion:hover { background: var(--border-color) !important; }
-        .suggestions-promo { display: none !important; } /* убираем лого */
+        .suggestions-promo { display: none !important; }
         .suggestions-addon { display: none !important; }
 
         /* КАТАЛОГ */
@@ -97,9 +97,7 @@
         }
     </style>
 </head>
-<body>
-
-    <header>
+<body class="dark-mode"> <header>
         <div style="opacity: 0.5; font-size: 11px;">mister snich / drop 01</div>
         <div class="header-right">
             <div class="nav-link" onclick="document.body.classList.toggle('dark-mode')">тема</div>
@@ -153,7 +151,7 @@
             <input type="text" id="name" placeholder="фио">
             <input type="text" id="address" placeholder="город / адрес">
             <input type="text" id="postal_code" placeholder="почтовый индекс" readonly>
-            <input type="text" id="tg" placeholder="telegram (@)">
+            <input type="text" id="tg_contact" placeholder="telegram (@)">
             <button class="action-btn" style="margin-top:10px;" onclick="finishOrder()">подтвердить заказ</button>
         </div>
     </div>
@@ -178,6 +176,9 @@
     <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
 
     <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); 
+
         let cart = [];
         let curItem = null;
         let selectedSize = null;
@@ -188,11 +189,10 @@
                 title: 'zip-hoode / "snich"',
                 price: 4500,
                 imgs: ['zip-hoode.jpg', 'zip-hoode1.jpg', 'zip-hoode2.jpg', 'zip-hoode3.jpg'],
-                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка / кружево / кулирная гладь / сетка (кружево и кулирная гладь на заклепках, по желанию их можно снять)\nмашинная вышивка и нашивки тканью\n\nbaby size (m-l) длина 65см спереди 75см сзади / ширина 65\nbig size (xl+) длина 70см спереди 80см сзади / ширина 70'
+                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка...'
             }
         };
 
-        // НАСТРОЙКА DADATA
         $("#address").suggestions({
             token: "1ed0eebc35156fe4fe197c5dd676354f40bfd073",
             type: "ADDRESS",
@@ -270,9 +270,25 @@
         }
 
         function finishOrder() {
-            if(!$("#name").val() || !$("#address").val()) return alert('заполни данные');
-            alert('заказ принят!');
-            cart = []; updateCart(); showPage('home');
+            const name = $("#name").val();
+            const address = $("#address").val();
+            const contact = $("#tg_contact").val();
+            const postal = $("#postal_code").val();
+
+            if(!name || !address || !contact) return alert('заполни все поля!');
+
+            let orderData = {
+                item: cart.map(i => `${i.title} (${i.size})`).join(', '),
+                price: cart.reduce((sum, i) => sum + i.price, 0) + ' rub',
+                customer: name,
+                address: address,
+                zip: postal,
+                contact: contact
+            };
+
+            // ОТПРАВЛЯЕМ БОТУ
+            tg.sendData(JSON.stringify(orderData)); 
+            tg.close();
         }
     </script>
 </body>
