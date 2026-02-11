@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mister snich</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
         :root { 
             --main-font: 'Courier New', monospace; 
@@ -18,7 +17,7 @@
             --border-color: #222222;
         }
 
-        /* Та самая надпись soon */
+        /* Та самая надпись soon — теперь точно не сломается */
         .soon-box { color: #000000 !important; opacity: 1 !important; } 
         body.dark-mode .soon-box { color: #ffffff !important; opacity: 1 !important; }
 
@@ -29,53 +28,57 @@
 
         header { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 20px; border-bottom: 1px solid var(--border-color); 
+            padding: 15px 20px; border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; background: var(--bg-color); z-index: 1000;
         }
         .header-right { display: flex; gap: 20px; }
-        .nav-link { cursor: pointer; text-decoration: underline; transition: 0.3s; }
-        .nav-link:hover { opacity: 0.5; }
+        .nav-link { cursor: pointer; text-decoration: underline; }
 
-        .page { display: none; padding: 20px; }
+        .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .active { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* КАТАЛОГ */
+        /* ГЛАВНАЯ СЕТКА */
         .catalog-grid { 
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; 
             max-width: 1000px; margin: 40px auto; 
         }
-        .product-card { cursor: pointer; transition: 0.3s; }
-        .product-card:hover { opacity: 0.7; }
         .img-container { width: 100%; aspect-ratio: 3/4; background: #f9f9f9; overflow: hidden; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* ОФОРМЛЕНИЕ ЗАКАЗА (INPUTS) */
-        input {
-            width: 100%; padding: 18px; box-sizing: border-box;
-            background: transparent; border: 1px solid var(--text-color);
-            color: var(--text-color); font-family: inherit; font-size: 14px;
-            outline: none; transition: 0.3s;
+        /* КАРТОЧКА ТОВАРА — ИСПРАВЛЕННЫЙ FLEX */
+        .product-layout { 
+            display: flex; gap: 40px; max-width: 1000px; margin: 0 auto; align-items: flex-start; 
         }
-        input:focus { background: rgba(128,128,128,0.1); }
+        .product-media { flex: 1; max-width: 500px; }
+        .product-info { flex: 1; min-width: 300px; }
 
-        /* КНОПКИ */
+        /* ПОЛЯ ВВОДА */
+        input {
+            width: 100%; padding: 15px; margin-bottom: 15px; box-sizing: border-box;
+            background: transparent; border: 1px solid var(--text-color);
+            color: var(--text-color); font-family: inherit; outline: none;
+        }
+
         .action-btn { 
             width: 100%; background: var(--text-color); color: var(--bg-color); 
-            border: none; padding: 22px; cursor: pointer; font-family: inherit; 
-            font-size: 16px; transition: 0.3s; font-weight: 600;
+            border: none; padding: 20px; cursor: pointer; font-family: inherit; 
+            font-size: 16px; font-weight: 600; transition: 0.3s;
         }
         .action-btn:hover { opacity: 0.8; }
 
         /* КОРЗИНА */
         #cart-panel { 
-            position: fixed; top: 0; right: -100%; width: 380px; height: 100%; 
+            position: fixed; top: 0; right: -100%; width: 350px; height: 100%; 
             background: var(--bg-color); z-index: 2000; transition: 0.4s; 
             display: flex; flex-direction: column; border-left: 1px solid var(--border-color);
         }
         #cart-panel.open { right: 0; }
-        #mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1999; display: none; }
+        #mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1999; display: none; }
 
-        @media (max-width: 850px) {
+        @media (max-width: 768px) {
             .catalog-grid { grid-template-columns: 1fr; }
+            .product-layout { flex-direction: column; }
             #cart-panel { width: 100%; }
         }
     </style>
@@ -97,9 +100,8 @@
                 <div style="margin-top:15px; font-weight:600;">zip-hoode / "snich"</div>
                 <div>4500 rub</div>
             </div>
-            
-            <div class="product-card" style="cursor:default;">
-                <div class="img-container soon-box" style="display:flex; align-items:center; justify-content:center; font-weight:600; font-size:24px; background: rgba(128,128,128,0.2);">
+            <div class="product-card">
+                <div class="img-container soon-box" style="display:flex; align-items:center; justify-content:center; font-weight:600; font-size:24px; background: rgba(128,128,128,0.1);">
                     soon
                 </div>
                 <div style="margin-top:15px; font-weight:600; opacity: 0.4;">t-shirt / "snich"</div>
@@ -110,65 +112,55 @@
 
     <div id="product" class="page">
         <div onclick="showPage('home')" style="cursor:pointer; opacity:0.5; margin-bottom:20px;">← назад</div>
-        <div style="display: flex; gap: 50px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 300px;">
-                <div class="swiper mySwiper">
-                    <div class="swiper-wrapper" id="slides"></div>
-                </div>
+        <div class="product-layout">
+            <div class="product-media">
+                <div class="img-container" id="p-img"></div>
             </div>
-            <div style="flex: 1; min-width: 300px;">
-                <h1 id="p-title"></h1>
-                <div id="p-price" style="font-weight:600; margin-bottom:20px;"></div>
-                <div id="p-desc" style="white-space: pre-line; font-size: 14px; opacity: 0.8; margin-bottom: 20px;"></div>
-                <button class="action-btn" onclick="add('big-size')">добавить big-size</button>
+            <div class="product-info">
+                <h1 id="p-title" style="margin:0 0 10px 0;"></h1>
+                <div id="p-price" style="font-size:20px; font-weight:600; margin-bottom:20px;"></div>
+                <div id="p-desc" style="white-space: pre-line; font-size:14px; line-height:1.6; margin-bottom:30px;"></div>
+                <button class="action-btn" onclick="addToCart()">в корзину (big-size)</button>
             </div>
         </div>
     </div>
 
     <div id="checkout" class="page">
-        <div onclick="showPage('home')" style="cursor:pointer; opacity:0.5; margin-bottom:20px;">← назад в магазин</div>
-        <div style="max-width: 500px; margin: 0 auto;">
+        <div onclick="showPage('home')" style="cursor:pointer; opacity:0.5; margin-bottom:20px;">← назад</div>
+        <div style="max-width: 450px; margin: 40px auto;">
             <h2 style="margin-bottom:30px;">оформление заказа</h2>
-            <div style="display:grid; gap:15px;">
-                <input type="text" id="order-name" placeholder="фио">
-                <input type="text" id="order-address" placeholder="город / адрес">
-                <input type="text" id="order-phone" placeholder="номер телефона">
-                <input type="text" id="order-tg" placeholder="тг для связи (@)">
-                
-                <div style="margin-top:10px; padding:15px; border:1px dashed var(--text-color); font-size:12px; opacity:0.6;">
-                    после нажатия «подтвердить» мы свяжемся с тобой в telegram для оплаты.
-                </div>
-                <button class="action-btn" onclick="confirmOrder()">подтвердить заказ</button>
-            </div>
+            <input type="text" id="name" placeholder="фио">
+            <input type="text" id="address" placeholder="город / адрес">
+            <input type="text" id="tg" placeholder="telegram (@)">
+            <button class="action-btn" style="margin-top:10px;" onclick="finishOrder()">подтвердить заказ</button>
         </div>
     </div>
 
     <div id="mask" onclick="toggleCart(false)"></div>
     <div id="cart-panel">
-        <div style="padding:25px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
+        <div style="padding:20px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
             <span style="font-weight:600;">корзина</span>
             <span style="cursor:pointer;" onclick="toggleCart(false)">✕</span>
         </div>
-        <div id="cart-content" style="flex:1; overflow-y:auto; padding:25px;"></div>
-        <div style="padding:25px; border-top:1px solid var(--border-color);">
+        <div id="cart-items" style="flex:1; padding:20px; overflow-y:auto;"></div>
+        <div style="padding:20px; border-top:1px solid var(--border-color);">
             <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:600;">
-                <span>итого</span><span id="total">0 rub</span>
+                <span>итого:</span><span id="total-price">0 rub</span>
             </div>
-            <button class="action-btn" onclick="goToCheckout()">оформить</button>
+            <button class="action-btn" onclick="startCheckout()">оформить</button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let cart = [];
-        let cur = null;
+        let curItem = null;
 
-        const data = {
+        const items = {
             zip: {
                 title: 'zip-hoode / "snich"',
                 price: 4500,
-                imgs: ['zip-hoode.jpg'],
-                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка'
+                img: 'zip-hoode.jpg',
+                desc: 'new drop\nоверсайз крой\nткань: футер 3-х нитка\nмашинная вышивка'
             }
         };
 
@@ -179,55 +171,60 @@
         }
 
         function loadItem(id) {
-            cur = data[id];
-            document.getElementById('p-title').innerText = cur.title;
-            document.getElementById('p-price').innerText = cur.price + ' rub';
-            document.getElementById('p-desc').innerText = cur.desc;
-            document.getElementById('slides').innerHTML = `<div class="swiper-slide"><img src="${cur.imgs[0]}" style="width:100%"></div>`;
+            curItem = items[id];
+            document.getElementById('p-title').innerText = curItem.title;
+            document.getElementById('p-price').innerText = curItem.price + ' rub';
+            document.getElementById('p-desc').innerText = curItem.desc;
+            document.getElementById('p-img').innerHTML = `<img src="${curItem.img}">`;
             showPage('product');
         }
 
-        function toggleCart(open) {
-            document.getElementById('cart-panel').classList.toggle('open', open);
-            document.getElementById('mask').style.display = open ? 'block' : 'none';
+        function toggleCart(show) {
+            document.getElementById('cart-panel').classList.toggle('open', show);
+            document.getElementById('mask').style.display = show ? 'block' : 'none';
         }
 
-        function add(size) {
-            cart.push({ ...cur, size, qty: 1 });
-            renderCart();
+        function addToCart() {
+            cart.push({...curItem, size: 'big-size'});
+            updateCart();
             toggleCart(true);
         }
 
-        function renderCart() {
-            const list = document.getElementById('cart-content');
-            const total = cart.reduce((a, b) => a + b.price, 0);
+        function updateCart() {
+            const list = document.getElementById('cart-items');
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
             document.getElementById('count').innerText = cart.length;
-            document.getElementById('total').innerText = total + ' rub';
-            if(cart.length === 0) { list.innerHTML = '<div style="opacity:0.3;text-align:center;">пусто</div>'; return; }
+            document.getElementById('total-price').innerText = total + ' rub';
+            
+            if(cart.length === 0) {
+                list.innerHTML = '<div style="text-align:center; opacity:0.3; margin-top:50px;">пусто</div>';
+                return;
+            }
+
             list.innerHTML = cart.map((item, i) => `
-                <div style="display:flex; gap:15px; margin-bottom:20px; font-size:12px;">
-                    <div style="flex:1;">
+                <div style="display:flex; gap:15px; margin-bottom:20px;">
+                    <img src="${item.img}" style="width:60px; height:80px; object-fit:cover;">
+                    <div style="flex:1; font-size:12px;">
                         <div style="font-weight:600;">${item.title}</div>
                         <div style="opacity:0.6;">размер: ${item.size}</div>
-                        <div style="cursor:pointer; text-decoration:underline; margin-top:5px;" onclick="cart.splice(${i},1);renderCart();">удалить</div>
+                        <div style="margin-top:5px; cursor:pointer; text-decoration:underline;" onclick="cart.splice(${i},1); updateCart();">удалить</div>
                     </div>
-                    <div style="font-weight:600;">${item.price} rub</div>
+                    <div style="font-weight:600;">${item.price}</div>
                 </div>
             `).join('');
         }
 
-        function goToCheckout() {
-            if (cart.length === 0) return alert('корзина пуста');
+        function startCheckout() {
+            if(cart.length === 0) return alert('корзина пуста');
             toggleCart(false);
             showPage('checkout');
         }
 
-        function confirmOrder() {
-            const name = document.getElementById('order-name').value;
-            if(!name) return alert('заполни данные');
-            alert('заказ принят! скоро свяжемся.');
+        function finishOrder() {
+            if(!document.getElementById('name').value) return alert('заполни данные');
+            alert('заказ принят! скоро напишем в tg.');
             cart = [];
-            renderCart();
+            updateCart();
             showPage('home');
         }
     </script>
