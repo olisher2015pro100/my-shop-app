@@ -19,10 +19,12 @@
         }
         .logo { font-size: 14px; letter-spacing: 3px; font-weight: 900; }
 
-        /* КАТАЛОГ */
         .catalog { padding: 15px; display: flex; flex-direction: column; gap: 25px; }
         .product-card { background: #0a0a0a; border-radius: 25px; overflow: hidden; border: 1px solid #1a1a1a; }
-        .product-card img { width: 100%; display: block; aspect-ratio: 3/4; object-fit: cover; }
+        
+        /* ИСПРАВЛЕНИЕ КАРТИНКИ: теперь не растягивается */
+        .product-card img { width: 100%; display: block; height: auto; max-height: 500px; object-fit: contain; background: #000; }
+        
         .product-details { padding: 20px; }
 
         .page { display: none; min-height: 100vh; background: var(--bg); padding-bottom: 40px; }
@@ -30,9 +32,8 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .info-block { padding: 25px; }
-        /* МАКСИМАЛЬНО ЖИРНОЕ ОПИСАНИЕ */
         .info-desc { 
-            font-size: 16px; line-height: 1.6; font-weight: 900; 
+            font-size: 15px; line-height: 1.6; font-weight: 900; 
             color: #fff; margin-bottom: 30px; white-space: pre-line; 
             background: #111; padding: 20px; border-radius: 15px; border: 1px solid #222;
         }
@@ -48,7 +49,7 @@
 
         input { 
             width: 100%; background: #111; border: 1px solid #222; padding: 18px; 
-            border-radius: 15px; color: #fff; margin-bottom: 12px; box-sizing: border-box; font-family: inherit;
+            border-radius: 15px; color: #fff; margin-bottom: 12px; box-sizing: border-box; font-family: inherit; font-size: 16px;
         }
         .suggestions-suggestions { background: #111 !important; color: #fff !important; border: 1px solid #333 !important; }
     </style>
@@ -78,7 +79,9 @@
 
     <div id="product" class="page">
         <div style="padding:20px; color:var(--muted)" onclick="showPage('home')">← назад</div>
-        <div class="swiper mySwiper"><div class="swiper-wrapper" id="slides"></div></div>
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper" id="slides"></div>
+        </div>
         <div class="info-block">
             <div style="font-size: 24px; font-weight: 800; margin-bottom: 10px;" id="p-title"></div>
             <div style="font-size: 20px; color: var(--muted); margin-bottom: 20px;" id="p-price"></div>
@@ -124,7 +127,7 @@
             tshirt: {
                 title: 't-shirt / "snich"',
                 price: 'soon',
-                imgs: ['zip-hoode.jpg'], // Замени на фото тишки когда будет
+                imgs: ['zip-hoode.jpg'],
                 desc: 'coming soon...'
             }
         };
@@ -142,7 +145,7 @@
             $("#p-title").text(currentItem.title);
             $("#p-price").text(currentItem.price);
             $("#p-desc").text(currentItem.desc);
-            $("#slides").html(currentItem.imgs.map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join(''));
+            $("#slides").html(currentItem.imgs.map(img => `<div class="swiper-slide" style="display:flex; justify-content:center; background:#000;"><img src="${img}" style="max-width:100%; height:auto; object-fit:contain;"></div>`).join(''));
             new Swiper(".mySwiper", { loop: true });
             showPage('product');
         }
@@ -150,25 +153,15 @@
         function selectSize(el) { $(".size-item").removeClass("selected"); $(el).addClass("selected"); selectedSize = el.innerText; }
 
         function confirmOrder() {
-            const fields = {
-                name: $("#name").val(),
-                addr: $("#address").val(),
-                phone: $("#phone").val(),
-                email: $("#email").val(),
-                contact: $("#tg_user").val()
-            };
-
-            if(!fields.name || !fields.addr || !fields.contact || !fields.phone) return alert('заполни основные поля!');
-
             const order = {
                 item: currentItem.title + " [" + (selectedSize || 'no size') + "]",
                 price: currentItem.price,
-                customer: fields.name,
-                address: fields.addr,
+                customer_name: $("#name").val(),
+                address: $("#address").val(),
                 zip: $("#postal").val(),
-                phone: fields.phone,
-                email: fields.email,
-                contact: fields.contact
+                phone: $("#phone").val(),
+                email: $("#email").val(),
+                tg_contact: $("#tg_user").val()
             };
             tg.sendData(JSON.stringify(order));
             tg.close();
